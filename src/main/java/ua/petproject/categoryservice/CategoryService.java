@@ -7,4 +7,5 @@ public interface CategoryService {
     void deleteElement(long id);
     Element addElement(Element element);
     Element updateElement(long id, Element element);
+
 }

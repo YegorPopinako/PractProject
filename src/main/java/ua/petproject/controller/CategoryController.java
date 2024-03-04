@@ -1,12 +1,16 @@
 package ua.petproject.controller;
 
-import ua.petproject.categories.Category;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import ua.petproject.categoryservice.CategoryService;
+import ua.petproject.categoryservice.CategoryServiceIMPL;
 import ua.petproject.model.Element;
 
+@Controller
 public class CategoryController {
+
+    @Autowired
     private CategoryService categoryService;
-    private Category category;
 
     public Element getElement(long id) {
         return categoryService.getElement(id);
@@ -23,4 +27,5 @@ public class CategoryController {
     public Element updateElement(long id, Element element) {
         return categoryService.updateElement(id, element);
     }
+
 }

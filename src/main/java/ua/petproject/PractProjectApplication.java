@@ -19,7 +19,7 @@ public class PractProjectApplication implements CommandLineRunner {
 	}
 
 	@Override
-	public void run(String... args) throws Exception {
+	public void run(String... args) {
 
 		Element element1 = new Element(1L, "Element 1", Category.FIRST);
 		Element element2 = new Element(2L, "Element 2", Category.SECOND);

@@ -1,9 +1,10 @@
 package ua.petproject.model;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
-import ua.petproject.categories.Category;
+import ua.petproject.model.categories.Category;
 
 @Getter
 @Setter

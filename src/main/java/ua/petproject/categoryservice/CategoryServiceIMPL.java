@@ -1,4 +1,5 @@
 package ua.petproject.categoryservice;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.petproject.model.Element;

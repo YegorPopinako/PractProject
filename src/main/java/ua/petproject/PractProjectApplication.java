@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import ua.petproject.categories.Category;
+import ua.petproject.model.categories.Category;
 import ua.petproject.controller.CategoryController;
 import ua.petproject.model.Element;
 

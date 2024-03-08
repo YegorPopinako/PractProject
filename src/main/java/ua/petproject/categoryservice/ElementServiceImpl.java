@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.petproject.model.Element;
+import ua.petproject.model.categories.Category;
 import ua.petproject.repository.ElementDAO;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -36,5 +38,10 @@ public class ElementServiceImpl implements ElementService {
             return elementDAO.save(element);
         }
         return null;
+    }
+
+    @Override
+    public List<Element> getAllByCategory(Category category) {
+        return elementDAO.findByCategory(category);
     }
 }

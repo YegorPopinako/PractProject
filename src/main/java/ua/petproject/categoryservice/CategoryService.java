@@ -4,12 +4,12 @@ import ua.petproject.model.Element;
 
 public interface CategoryService {
 
-    Element getElement(long id);
+    Element getElement(Long id);
 
-    void deleteElement(long id);
+    void deleteElement(Long id);
 
     Element addElement(Element element);
 
-    Element updateElement(long id, Element element);
+    Element updateElement(Long id, Element element);
 
 }

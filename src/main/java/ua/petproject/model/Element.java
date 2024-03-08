@@ -25,7 +25,7 @@ public class Element {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String name;
     private Category category;
 
@@ -34,7 +34,7 @@ public class Element {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Element element = (Element) o;
-        return id == element.id;
+        return Objects.equals(id, element.id);
     }
 
     @Override

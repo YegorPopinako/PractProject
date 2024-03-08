@@ -12,12 +12,12 @@ public class CategoryServiceIMPL implements CategoryService {
     private CategoryDAO categoryDAO;
 
     @Override
-    public Element getElement(long id) {
+    public Element getElement(Long id) {
         return categoryDAO.findById(id).orElse(null);
     }
 
     @Override
-    public void deleteElement(long id) {
+    public void deleteElement(Long id) {
         categoryDAO.deleteById(id);
     }
 
@@ -27,7 +27,7 @@ public class CategoryServiceIMPL implements CategoryService {
     }
 
     @Override
-    public Element updateElement(long id, Element element) {
+    public Element updateElement(Long id, Element element) {
         if (categoryDAO.existsById(id)) {
             element.setId(id);
             return categoryDAO.save(element);

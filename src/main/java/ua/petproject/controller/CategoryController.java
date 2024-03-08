@@ -11,11 +11,11 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    public Element getElement(long id) {
+    public Element getElement(Long id) {
         return categoryService.getElement(id);
     }
 
-    public void deleteElement(long id) {
+    public void deleteElement(Long id) {
         categoryService.deleteElement(id);
     }
 
@@ -23,7 +23,7 @@ public class CategoryController {
         return categoryService.addElement(element);
     }
 
-    public Element updateElement(long id, Element element) {
+    public Element updateElement(Long id, Element element) {
         return categoryService.updateElement(id, element);
     }
 

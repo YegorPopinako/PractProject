@@ -1,5 +1,6 @@
 package ua.petproject.categoryservice;
 
+import jakarta.annotation.Nullable;
 import ua.petproject.model.Element;
 import ua.petproject.model.categories.Category;
 
@@ -15,5 +16,6 @@ public interface ElementService {
 
     Element updateElement(Long id, Element element);
 
+    @Nullable
     List<Element> getAllByCategory(Category category);
 }

@@ -2,7 +2,7 @@ package ua.petproject.categoryservice;
 
 import ua.petproject.model.Element;
 
-public interface CategoryService {
+public interface ElementService {
 
     Element getElement(Long id);
 

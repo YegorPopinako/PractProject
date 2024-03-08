@@ -1,5 +1,6 @@
 package ua.petproject.categoryservice;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.petproject.model.Element;
@@ -8,9 +9,9 @@ import ua.petproject.repository.ElementDAO;
 import java.util.NoSuchElementException;
 
 @Service
+@AllArgsConstructor
 public class ElementServiceImpl implements ElementService {
 
-    @Autowired
     private ElementDAO elementDAO;
 
     @Override

@@ -1,6 +1,6 @@
 package ua.petproject;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,10 +9,10 @@ import ua.petproject.controller.CategoryController;
 import ua.petproject.model.Element;
 
 @SpringBootApplication
+@AllArgsConstructor
 public class PractProjectApplication implements CommandLineRunner {
 
-	@Autowired
-	private CategoryController categoryController;
+	private final CategoryController categoryController;
 
 	public static void main(String[] args) {
 		SpringApplication.run(PractProjectApplication.class, args);

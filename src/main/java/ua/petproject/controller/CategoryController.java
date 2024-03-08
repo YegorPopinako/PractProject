@@ -1,14 +1,15 @@
 package ua.petproject.controller;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import ua.petproject.categoryservice.ElementService;
 import ua.petproject.model.Element;
 
 @Controller
+@AllArgsConstructor
 public class CategoryController {
 
-    @Autowired
     private ElementService elementService;
 
     public Element getElement(Long id) {

@@ -10,17 +10,17 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/category")
+@RequestMapping("/api/categories")
 public class CategoryController {
 
     private ElementService elementService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/api/categories/{id}")
     public Element getElement(@PathVariable Long id) {
         return elementService.getElement(id);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/api/categories/{id}")
     public void deleteElement(@PathVariable Long id) {
         elementService.deleteElement(id);
     }
@@ -30,12 +30,12 @@ public class CategoryController {
         return elementService.addElement(element);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/api/categories/{id}")
     public Element updateElement(@PathVariable Long id, @RequestBody Element element) {
         return elementService.updateElement(id, element);
     }
 
-    @GetMapping
+    @GetMapping("/api/categories")
     public List<Element> getAllByCategory(@RequestParam Category category) {
         return elementService.getAllByCategory(category);
     }

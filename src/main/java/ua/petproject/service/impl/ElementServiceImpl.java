@@ -1,11 +1,12 @@
-package ua.petproject.categoryservice;
+package ua.petproject.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.petproject.model.Element;
 import ua.petproject.model.categories.Category;
-import ua.petproject.repository.ElementDAO;
+import ua.petproject.repository.ElementRepository;
+import ua.petproject.service.ElementService;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -15,22 +16,22 @@ import java.util.NoSuchElementException;
 @AllArgsConstructor
 public class ElementServiceImpl implements ElementService {
 
-    private ElementDAO elementDAO;
+    private ElementRepository elementRepository;
 
     @Override
     @Transactional(readOnly = true)
     public Element getElement(Long id) {
-        return elementDAO.findById(id).orElseThrow(() -> new NoSuchElementException("Element not found"));
+        return elementRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Element not found"));
     }
 
     @Override
     public void deleteElement(Long id) {
-        elementDAO.deleteById(id);
+        elementRepository.deleteById(id);
     }
 
     @Override
     public Element addElement(Element element) {
-        return elementDAO.save(element);
+        return elementRepository.save(element);
     }
 
     @Override //TODO: remind how to rewrite
@@ -39,13 +40,13 @@ public class ElementServiceImpl implements ElementService {
         if (existingElement != null) {
             existingElement.setName(element.getName());
             existingElement.setCategory(element.getCategory());
-            return elementDAO.save(existingElement);
+            return elementRepository.save(existingElement);
         }
         return null;
     }
 
     @Override
     public List<Element> getAllByCategory(Category category) {
-        return elementDAO.findByCategory(category);
+        return elementRepository.findByCategory(category);
     }
 }

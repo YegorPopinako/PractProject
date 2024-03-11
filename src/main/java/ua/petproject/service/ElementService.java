@@ -1,4 +1,4 @@
-package ua.petproject.categoryservice;
+package ua.petproject.service;
 
 import jakarta.annotation.Nullable;
 import ua.petproject.model.Element;

@@ -6,6 +6,6 @@ import ua.petproject.model.categories.Category;
 
 import java.util.List;
 
-public interface ElementDAO extends JpaRepository<Element, Long> {
+public interface ElementRepository extends JpaRepository<Element, Long> {
     List<Element> findByCategory(Category category);
 }

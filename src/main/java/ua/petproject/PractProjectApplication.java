@@ -25,21 +25,21 @@ public class PractProjectApplication implements CommandLineRunner {
 		Element element2 = new Element(2L, "Element 2", Category.SECOND);
 		Element element3 = new Element(3L, "Element 3", Category.THIRD);
 
-		elementController.addElement(element1);
-		elementController.addElement(element2);
-		elementController.addElement(element3);
+		elementController.add(element1);
+		elementController.add(element2);
+		elementController.add(element3);
 
-		Element firstElement = elementController.getElement(1L);
+		Element firstElement = elementController.get(1L);
 		if (firstElement != null) {
 			System.out.println("First Element: " + firstElement);
 		}
 
-		Element updatedElement = elementController.updateElement(3L, new Element(3L, "Updated Element 3", Category.SECOND));
+		Element updatedElement = elementController.update(3L, new Element(3L, "Updated Element 3", Category.SECOND));
 		if (updatedElement != null) {
 			System.out.println("Updated Element: " + updatedElement);
 		}
 
-		elementController.deleteElement(3L);
+		elementController.delete(3L);
 		System.out.println("Third element deleted.");
 	}
 }

@@ -25,30 +25,30 @@ public class ElementController {
 
     private final ElementService elementService;
 
+    @PostMapping
+    public Element add(@RequestBody Element element) {
+        return elementService.add(element);
+    }
+
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.CREATED)
-    public Element getElement(@PathVariable Long id) {
-        return elementService.getElement(id);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteElement(@PathVariable Long id) {
-        elementService.deleteElement(id);
-    }
-
-    @PostMapping
-    public Element addElement(@RequestBody Element element) {
-        return elementService.addElement(element);
-    }
-
-    @PutMapping("/{id}")
-    public Element updateElement(@PathVariable Long id, @RequestBody Element element) {
-        return elementService.updateElement(id, element);
+    public Element get(@PathVariable Long id) {
+        return elementService.get(id);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public List<Element> getAllByCategory(@RequestParam Category category) {
-        return elementService.getAllByCategory(category);
+    public List<Element> getAll(@RequestParam Category category) {
+        return elementService.getAll(category);
+    }
+
+    @PutMapping("/{id}")
+    public Element update(@PathVariable Long id, @RequestBody Element element) {
+        return elementService.update(id, element);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        elementService.delete(id);
     }
 }

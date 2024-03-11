@@ -1,5 +1,6 @@
 package ua.petproject.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,44 +10,45 @@ import ua.petproject.repository.ElementRepository;
 import ua.petproject.service.ElementService;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @AllArgsConstructor
 public class ElementServiceImpl implements ElementService {
 
     private ElementRepository elementRepository;
 
     @Override
-    @Transactional(readOnly = true)
-    public Element getElement(Long id) {
-        return elementRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Element not found"));
-    }
-
-    @Override
-    public void deleteElement(Long id) {
-        elementRepository.deleteById(id);
-    }
-
-    @Override
-    public Element addElement(Element element) {
+    @Transactional
+    public Element add(Element element) {
         return elementRepository.save(element);
     }
 
-    @Override //TODO: remind how to rewrite
-    public Element updateElement(Long id, Element element) {
-        Element existingElement = getElement(id);
-        if (existingElement != null) {
-            existingElement.setName(element.getName());
-            existingElement.setCategory(element.getCategory());
-            return elementRepository.save(existingElement);
-        }
-        return null;
+    @Override
+    public Element get(Long id) {
+        return elementRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Entity not found"));
     }
 
     @Override
-    public List<Element> getAllByCategory(Category category) {
+    public List<Element> getAll(Category category) {
         return elementRepository.findByCategory(category);
+    }
+
+    @Override
+    @Transactional
+    public Element update(Long id, Element element) {
+        Element existingElement = get(id);
+        existingElement.setName(element.getName());
+        existingElement.setCategory(element.getCategory());
+        return existingElement;
+    }
+
+    @Override
+    @Transactional
+    public void delete(Long id) {
+        if(!elementRepository.existsById(id)) {
+            throw new EntityNotFoundException("Entity not found");
+        }
+        elementRepository.deleteById(id);
     }
 }

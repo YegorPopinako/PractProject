@@ -1,12 +1,11 @@
 package ua.petproject.service.impl;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ua.petproject.model.Element;
 import ua.petproject.model.categories.Category;
 import ua.petproject.repository.ElementRepository;
@@ -14,10 +13,11 @@ import ua.petproject.repository.ElementRepository;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, SpringExtension.class})
 class ElementServiceImplTest {
 
     @Mock
@@ -75,11 +75,10 @@ class ElementServiceImplTest {
     }
 
     @Test
-    void testDelete() {
-        Long id = 1L;
-        Element element = new Element("Element 1", Category.FIRST);
+    void ElementService_DeleteElement() {
+        Long id = 4L;
 
-        when(elementRepository.findById(id)).thenReturn(Optional.ofNullable(element));
+        when(elementRepository.existsById(id)).thenReturn(true);
 
         assertAll(() -> elementService.delete(id));
     }

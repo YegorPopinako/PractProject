@@ -37,11 +37,16 @@ public class ElementServiceImpl implements ElementService {
     @Override
     @Transactional
     public Element update(Long id, Element element) {
-        Element existingElement = get(id);
-        existingElement.setName(element.getName());
-        existingElement.setCategory(element.getCategory());
-        return existingElement;
+        try {
+            Element existingElement = get(id);
+            existingElement.setName(element.getName());
+            existingElement.setCategory(element.getCategory());
+            return existingElement;
+        } catch (EntityNotFoundException ex) {
+            throw new EntityNotFoundException("Entity with ID " + id + " not found.");
+        }
     }
+
 
     @Override
     @Transactional

@@ -18,10 +18,10 @@ import java.util.Objects;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @ToString
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "elements")
 public class Element {
 
@@ -35,6 +35,12 @@ public class Element {
     @Column(nullable = false)
     @Enumerated(value = jakarta.persistence.EnumType.STRING)
     private Category category;
+
+    public Element(String name, Category category) {
+        this.name = name;
+        this.category = category;
+    }
+
 
     @Override
     public boolean equals(Object o) {

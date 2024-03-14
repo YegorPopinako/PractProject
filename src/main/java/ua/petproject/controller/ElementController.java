@@ -2,6 +2,7 @@ package ua.petproject.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,9 +32,10 @@ public class ElementController {
     }
 
     @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Element get(@PathVariable Long id) {
-        return elementService.get(id);
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Element> get(@PathVariable Long id) {
+        Element element = elementService.get(id);
+        return ResponseEntity.ok(element);
     }
 
     @GetMapping

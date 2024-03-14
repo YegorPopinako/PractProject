@@ -21,6 +21,9 @@ public class ElementServiceImpl implements ElementService {
     @Override
     @Transactional
     public Element add(Element element) {
+        if(element == null){
+            throw new NullPointerException("Element can't be null");
+        }
         return elementRepository.save(element);
     }
 
@@ -46,7 +49,6 @@ public class ElementServiceImpl implements ElementService {
             throw new EntityNotFoundException("Entity with ID " + id + " not found.");
         }
     }
-
 
     @Override
     @Transactional

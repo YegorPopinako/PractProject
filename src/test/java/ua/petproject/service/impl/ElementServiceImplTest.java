@@ -1,5 +1,6 @@
 package ua.petproject.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,11 +14,10 @@ import ua.petproject.repository.ElementRepository;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-@ExtendWith({MockitoExtension.class, SpringExtension.class})
+@ExtendWith({SpringExtension.class, MockitoExtension.class})
 class ElementServiceImplTest {
 
     @Mock
@@ -27,7 +27,7 @@ class ElementServiceImplTest {
     private ElementServiceImpl elementService;
 
     @Test
-    void ElementService_AddElement() {
+    void elementService_AddElement() {
         Element element = new Element("Element 1", Category.FIRST);
 
         when(elementRepository.save(element)).thenReturn(element);
@@ -37,7 +37,7 @@ class ElementServiceImplTest {
     }
 
     @Test
-    void ElementService_GetElementById() {
+    void elementService_GetElementById() {
         long id = 1L;
         Element element = new Element("Element 1", Category.FIRST);
 
@@ -49,7 +49,7 @@ class ElementServiceImplTest {
     }
 
     @Test
-    void ElementService_GetAllByCategory() {
+    void elementService_GetAllByCategory() {
         Category category = Category.FIRST;
         Element element = new Element("Element 1", category);
         Element element2 = new Element("Element 2", category);
@@ -62,7 +62,7 @@ class ElementServiceImplTest {
     }
 
     @Test
-    void ElementService_UpdateElement() {
+    void elementService_UpdateElement() {
         long id = 1L;
         Element originalElement = new Element("Element 1", Category.FIRST);
         Element updatedElement = new Element("Updated Element 1", Category.FIRST);
@@ -75,11 +75,44 @@ class ElementServiceImplTest {
     }
 
     @Test
-    void ElementService_DeleteElement() {
+    void elementService_DeleteElement() {
         Long id = 4L;
 
         when(elementRepository.existsById(id)).thenReturn(true);
 
         assertAll(() -> elementService.delete(id));
+    }
+
+    @Test
+    void elementService_GetElementById_ElementNotFound() {
+        long id = 1L;
+
+        when(elementRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> elementService.get(id));
+    }
+
+    @Test
+    void elementService_UpdateElement_ElementNotFound() {
+        long id = 1L;
+        Element updatedElement = new Element("Updated Element 1", Category.FIRST);
+
+        when(elementRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> elementService.update(id, updatedElement));
+    }
+
+    @Test
+    void elementService_DeleteElement_ElementNotFound() {
+        Long id = 4L;
+
+        when(elementRepository.existsById(id)).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class, () -> elementService.delete(id));
+    }
+
+    @Test
+    void elementService_AddElement_NullElement() {
+        assertThrows(NullPointerException.class, () -> elementService.add(null));
     }
 }

@@ -17,6 +17,7 @@ import ua.petproject.service.ElementService;
 import ua.petproject.model.Element;
 import ua.petproject.model.categories.Category;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -27,9 +28,12 @@ public class ElementController {
     private final ElementService elementService;
 
     @PostMapping
-    public Element add(@RequestBody Element element) {
-        return elementService.add(element);
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Element> add(@RequestBody Element element) {
+        Element savedElement = elementService.add(element);
+        return ResponseEntity.created(URI.create("/elements/" + savedElement.getId())).body(savedElement);
     }
+
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)

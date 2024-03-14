@@ -83,4 +83,19 @@ public class ElementControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
+
+    @Test
+    public void elementController_updateElement() {
+        long id = 1L;
+        Element originalElement = new Element("Element 1", Category.FIRST);
+        Element updatedElement = new Element("Updated Element 1", Category.FIRST);
+
+        when(elementService.update(id, updatedElement)).thenReturn(updatedElement);
+
+        ResponseEntity<Element> response = elementController.update(id, updatedElement);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        assertThat(response.getBody()).isEqualTo(originalElement);
+    }
 }

@@ -55,9 +55,12 @@ public class ElementController {
 
 
     @PutMapping("/{id}")
-    public Element update(@PathVariable Long id, @RequestBody Element element) {
-        return elementService.update(id, element);
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Element> update(@PathVariable Long id, @RequestBody Element element) {
+        Element updatedElement = elementService.update(id, element);
+        return ResponseEntity.ok(updatedElement);
     }
+
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {

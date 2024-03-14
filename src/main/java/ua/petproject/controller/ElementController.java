@@ -43,10 +43,16 @@ public class ElementController {
     }
 
     @GetMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public List<Element> getAll(@RequestParam Category category) {
-        return elementService.getAll(category);
+    public ResponseEntity<List<Element>> getAll(@RequestParam Category category) {
+        List<Element> elements = elementService.getAll(category);
+        if (elements.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.ok(elements);
+        }
     }
+
+
 
     @PutMapping("/{id}")
     public Element update(@PathVariable Long id, @RequestBody Element element) {

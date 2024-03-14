@@ -12,6 +12,9 @@ import ua.petproject.model.categories.Category;
 import ua.petproject.service.ElementService;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -55,5 +58,29 @@ public class ElementControllerTest {
         assertThat(response).isInstanceOf(ResponseEntity.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(expectedElement);
+    }
+
+    @Test
+    public void elementController_getElementsByCategory()  {
+        Category expectedCategory = Category.FIRST;
+        List<Element> expectedElements = Arrays.asList(new Element("Element 1", Category.FIRST), new Element("Element 2", Category.FIRST));
+
+        when(elementService.getAll(expectedCategory)).thenReturn(expectedElements);
+
+        ResponseEntity<List<Element>> response = elementController.getAll(expectedCategory);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(expectedElements);
+    }
+
+    @Test
+    public void elementController_getElementsByCategory_EmptyList()  {
+        Category category = Category.FIRST;
+
+        when(elementService.getAll(category)).thenReturn(Collections.emptyList());
+
+        ResponseEntity<List<Element>> response = elementController.getAll(category);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 }

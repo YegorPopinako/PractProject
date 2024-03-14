@@ -98,4 +98,13 @@ public class ElementControllerTest {
 
         assertThat(response.getBody()).isEqualTo(originalElement);
     }
+
+    @Test
+    public void elementController_deleteElement() {
+        long id = 1L;
+
+        ResponseEntity<Void> response = elementController.delete(id);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+    }
 }

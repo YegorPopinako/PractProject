@@ -4,9 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import ua.petproject.model.categories.Category;
 import ua.petproject.controller.ElementController;
-import ua.petproject.model.Element;
 
 @SpringBootApplication
 @AllArgsConstructor

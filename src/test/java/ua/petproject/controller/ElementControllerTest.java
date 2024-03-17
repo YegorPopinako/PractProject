@@ -29,21 +29,15 @@ public class ElementControllerTest {
     private ElementController elementController;
 
     @Test
-    public void elementController_addNewElement()  {
+    public void elementController_addNewElement() {
         Element elementToAdd = new Element("Test Element", Category.SECOND);
         Element expectedSavedElement = new Element("Test Element", Category.SECOND);
 
         when(elementService.add(elementToAdd)).thenReturn(expectedSavedElement);
 
-        ResponseEntity<Element> response = elementController.add(elementToAdd);
+        Element response = elementController.add(elementToAdd);
 
-        assertThat(response).isInstanceOf(ResponseEntity.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-
-        URI location = response.getHeaders().getLocation();
-        assertThat(location).isEqualTo(URI.create("/elements/" + expectedSavedElement.getId()));
-
-        assertThat(response.getBody()).isEqualTo(expectedSavedElement);
+        assertThat(response).isEqualTo(expectedSavedElement);
     }
 
     @Test
@@ -53,58 +47,52 @@ public class ElementControllerTest {
 
         when(elementService.get(id)).thenReturn(expectedElement);
 
-        ResponseEntity<Element> response = elementController.get(id);
+        Element response = elementController.get(id);
 
-        assertThat(response).isInstanceOf(ResponseEntity.class);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(expectedElement);
+        assertThat(response).isEqualTo(expectedElement);
     }
 
     @Test
-    public void elementController_getElementsByCategory()  {
+    public void elementController_getElementsByCategory() {
         Category expectedCategory = Category.FIRST;
-        List<Element> expectedElements = Arrays.asList(new Element("Element 1", Category.FIRST), new Element("Element 2", Category.FIRST));
+        List<Element> expectedElements = Arrays.asList(new Element("Element 1", Category.FIRST),
+                new Element("Element 2", Category.FIRST));
 
         when(elementService.getAll(expectedCategory)).thenReturn(expectedElements);
 
-        ResponseEntity<List<Element>> response = elementController.getAll(expectedCategory);
+        List<Element> response = elementController.getAll(expectedCategory);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(expectedElements);
+        assertThat(response).isEqualTo(expectedElements);
     }
 
     @Test
-    public void elementController_getElementsByCategory_EmptyList()  {
+    public void elementController_getElementsByCategory_EmptyList() {
         Category category = Category.FIRST;
 
         when(elementService.getAll(category)).thenReturn(Collections.emptyList());
 
-        ResponseEntity<List<Element>> response = elementController.getAll(category);
+        List<Element> response = elementController.getAll(category);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(response).isEmpty();
     }
 
     @Test
     public void elementController_updateElement() {
         long id = 1L;
-        Element originalElement = new Element("Element 1", Category.FIRST);
         Element updatedElement = new Element("Updated Element 1", Category.FIRST);
 
         when(elementService.update(id, updatedElement)).thenReturn(updatedElement);
 
-        ResponseEntity<Element> response = elementController.update(id, updatedElement);
+        Element response = elementController.update(id, updatedElement);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-        assertThat(response.getBody()).isEqualTo(originalElement);
+        assertThat(response).isEqualTo(updatedElement);
     }
 
     @Test
     public void elementController_deleteElement() {
         long id = 1L;
 
-        ResponseEntity<Void> response = elementController.delete(id);
+        elementController.delete(id);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 }

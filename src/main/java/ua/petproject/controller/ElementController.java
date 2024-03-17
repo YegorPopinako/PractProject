@@ -29,42 +29,33 @@ public class ElementController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Element> add(@RequestBody Element element) {
-        Element savedElement = elementService.add(element);
-        return ResponseEntity.created(URI.create("/elements/" + savedElement.getId())).body(savedElement);
+    public Element add(@RequestBody Element element) {
+        return elementService.add(element);
     }
 
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Element> get(@PathVariable Long id) {
-        Element element = elementService.get(id);
-        return ResponseEntity.ok(element);
+    public Element get(@PathVariable Long id) {
+        return elementService.get(id);
     }
 
     @GetMapping
-    public ResponseEntity<List<Element>> getAll(@RequestParam Category category) {
-        List<Element> elements = elementService.getAll(category);
-        if (elements.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.ok(elements);
-        }
+    @ResponseStatus(HttpStatus.OK)
+    public List<Element> getAll(@RequestParam Category category) {
+        return elementService.getAll(category);
     }
-
-
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Element> update(@PathVariable Long id, @RequestBody Element element) {
-        Element updatedElement = elementService.update(id, element);
-        return ResponseEntity.ok(updatedElement);
+    public Element update(@PathVariable Long id, @RequestBody Element element) {
+        return elementService.update(id, element);
     }
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
         elementService.delete(id);
-        return ResponseEntity.noContent().build();
     }
 }

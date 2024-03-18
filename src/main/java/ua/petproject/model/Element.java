@@ -7,6 +7,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,14 +28,19 @@ import java.util.Objects;
 @Table(name = "elements")
 public class Element {
 
+    @Valid
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
+    @NotNull
+    @NotBlank
     private String name;
 
     @Column(nullable = false)
+    @NotNull
     @Enumerated(value = jakarta.persistence.EnumType.STRING)
     private Category category;
 
@@ -40,7 +48,6 @@ public class Element {
         this.name = name;
         this.category = category;
     }
-
 
     @Override
     public boolean equals(Object o) {

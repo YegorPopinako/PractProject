@@ -8,9 +8,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -24,7 +27,7 @@ import ua.petproject.service.ElementService;
 import java.util.List;
 
 @WebMvcTest({ ElementController.class })
-public class ElementControllerIntegrationTest {
+class ElementControllerIntegrationTest {
 
     @Autowired
     private MockMvc mvc;
@@ -37,7 +40,7 @@ public class ElementControllerIntegrationTest {
 
     @Test
     @SneakyThrows
-    void testAdd_shouldReturnStatusCodeOk() {
+    void testAdd_shouldReturnStatusCodeIsCreated() {
         var element = new Element();
         element.setName("username");
         element.setCategory(Category.FIRST);
@@ -57,15 +60,30 @@ public class ElementControllerIntegrationTest {
 
     @Test
     @SneakyThrows
-    void testAdd_shouldReturnStatusCodeBadRequest() {
-        Element element = null;
+    void testAdd_WhenEnumParameterIsInvalidShouldReturnBadRequest() {
 
-        var elementAsString = mapper.writeValueAsString(element);
+        var elementAsString = """
+                {
+                    "name": "username",
+                    "category": INVALID
+                }
+                """;
 
         mvc.perform(post("/api/elements")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(elementAsString))
                 .andDo(print())
+                .andExpect(status().isBadRequest());
+
+        verify(elementService, times(0)).add(any());
+    }
+
+    @Test
+    @SneakyThrows
+    void testAdd_shouldReturnStatusCodeBadRequest() {
+
+        mvc.perform(post("/api/elements")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
@@ -79,22 +97,19 @@ public class ElementControllerIntegrationTest {
         element.setName("username");
         element.setCategory(Category.FIRST);
 
-        var elementAsString = mapper.writeValueAsString(element);
-
         when(elementService.get(id)).thenReturn(element);
 
-        mvc.perform(get("/api/elements/" + id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(elementAsString))
+        mvc.perform(get("/api/elements/" + id))
                 .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.name").value("username"))
                 .andExpect(jsonPath("$.category").value(Category.FIRST.toString()));
     }
 
     @Test
     @SneakyThrows
-    public void testGetElement_ElementNotFound() {
+    void testGetElement_ElementNotFound() {
         long id = 1L;
 
         doThrow(new EntityNotFoundException("Entity not found")).when(elementService).get(id);
@@ -102,10 +117,8 @@ public class ElementControllerIntegrationTest {
         mvc.perform(get("/api/elements/" + id)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isNotFound())
-                .andReturn();
+                .andExpect(status().isNotFound());
     }
-
 
     @Test
     @SneakyThrows
@@ -121,8 +134,7 @@ public class ElementControllerIntegrationTest {
         when(elementService.getAll(Category.FIRST)).thenReturn(List.of(element1, element2));
 
         mvc.perform(get("/api/elements")
-                        .param("category", Category.FIRST.toString())
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .param("category", Category.FIRST.toString()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("username1"))
@@ -135,10 +147,6 @@ public class ElementControllerIntegrationTest {
     @SneakyThrows
     void testUpdate_shouldReturnStatusCodeOk() {
         long id = 1L;
-        var elementToUpdate = new Element();
-        elementToUpdate.setId(id);
-        elementToUpdate.setName("username1");
-        elementToUpdate.setCategory(Category.FIRST);
 
         var updatedElement = new Element();
         updatedElement.setId(id);
@@ -174,12 +182,13 @@ public class ElementControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(updatedElement)))
                 .andDo(print())
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Entity not found"));
     }
 
     @Test
     @SneakyThrows
-    void testDelete_shouldReturnStatusCodeOk() {
+    void testDelete_shouldReturnStatusCodeNoContent() {
         long id = 1L;
 
         mvc.perform(delete("/api/elements/" + id)
@@ -199,5 +208,58 @@ public class ElementControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void testAdd_ElementWithNullCategoryShouldReturnBadRequest() {
+        var element = new Element();
+        element.setName("Test Element");
+        element.setCategory(null);
+
+        var elementAsString = mapper.writeValueAsString(element);
+
+        mvc.perform(post("/api/elements")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(elementAsString))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Method argument not valid"));
+
+        verify(elementService, times(0)).add(element);
+    }
+
+    @Test
+    @SneakyThrows
+    void testGetAll_InvalidCategoryParameterShouldReturnBadRequest() {
+        String invalidCategory = "INVALID";
+
+        mvc.perform(get("/api/elements")
+                        .param("category", invalidCategory))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+
+        verify(elementService, times(0)).getAll(any());
+    }
+
+    @Test
+    @SneakyThrows
+    void testUpdate_InvalidElementShouldReturnBadRequest() {
+        Long id = 1L;
+        Element invalidElement = new Element();
+        invalidElement.setId(id);
+        invalidElement.setName("Test Element");
+        invalidElement.setCategory(null);
+
+        String invalidElementJson = mapper.writeValueAsString(invalidElement);
+
+        mvc.perform(put("/api/elements/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidElementJson))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Method argument not valid"));
+
+        verify(elementService, times(0)).update(id, invalidElement);
     }
 }

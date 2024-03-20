@@ -1,4 +1,15 @@
+.idea/
 HELP.md
-.idea
+*.class
+*.jar
+
+target/
+build/
+
 *.iml
-target
+*.ipr
+*.iws
+*.log
+
+.DS_Store
+Thumbs.db

@@ -28,8 +28,6 @@ import java.util.Objects;
 @Table(name = "elements")
 public class Element {
 
-    @Valid
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

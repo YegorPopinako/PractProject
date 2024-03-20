@@ -262,4 +262,25 @@ class ElementControllerIntegrationTest {
 
         verify(elementService, times(0)).update(id, invalidElement);
     }
+
+    @Test
+    @SneakyThrows
+    void testUpdate_whenElementFieldNotValid_shouldReturnBadRequest() {
+        Long id = 1L;
+        Element invalidElement = new Element();
+        invalidElement.setId(id);
+        invalidElement.setName("Test Element");
+        invalidElement.setCategory(null);
+
+        String invalidElementJson = mapper.writeValueAsString(invalidElement);
+
+        mvc.perform(put("/api/elements/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidElementJson))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Method argument not valid"));
+
+        verify(elementService, times(0)).update(id, invalidElement);
+    }
 }

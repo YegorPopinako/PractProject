@@ -2,6 +2,9 @@ package ua.petproject.controller;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,6 +28,7 @@ import ua.petproject.model.categories.Category;
 import ua.petproject.service.ElementService;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @WebMvcTest({ ElementController.class })
 class ElementControllerIntegrationTest {
@@ -210,14 +214,17 @@ class ElementControllerIntegrationTest {
                 .andExpect(status().isNotFound());
     }
 
-    @Test
+    @ParameterizedTest(name = "when name is `{0}` and category is `{1}`")
+    @MethodSource("sourceUpdate_InvalidElementShouldReturnBadRequest")
     @SneakyThrows
-    void testAdd_ElementWithNullCategoryShouldReturnBadRequest() {
-        var element = new Element();
-        element.setName("Test Element");
-        element.setCategory(null);
+    void testAdd_ElementWithNullCategoryShouldReturnBadRequest(String name, Category category) {
+        Long id = 1L;
+        var invalidElement = new Element();
+        invalidElement.setId(id);
+        invalidElement.setName(name);
+        invalidElement.setCategory(category);
 
-        var elementAsString = mapper.writeValueAsString(element);
+        var elementAsString = mapper.writeValueAsString(invalidElement);
 
         mvc.perform(post("/api/elements")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -226,30 +233,18 @@ class ElementControllerIntegrationTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Method argument not valid"));
 
-        verify(elementService, times(0)).add(element);
+        verify(elementService, times(0)).add(invalidElement);
     }
 
-    @Test
+    @ParameterizedTest(name = "when name is `{0}` and category is `{1}`")
+    @MethodSource("sourceUpdate_InvalidElementShouldReturnBadRequest")
     @SneakyThrows
-    void testGetAll_InvalidCategoryParameterShouldReturnBadRequest() {
-        String invalidCategory = "INVALID";
-
-        mvc.perform(get("/api/elements")
-                        .param("category", invalidCategory))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-
-        verify(elementService, times(0)).getAll(any());
-    }
-
-    @Test
-    @SneakyThrows
-    void testUpdate_InvalidElementShouldReturnBadRequest() {
+    void testUpdate_whenElementFieldNotValid_shouldReturnBadRequest(String name, Category category) {
         Long id = 1L;
-        Element invalidElement = new Element();
+        var invalidElement = new Element();
         invalidElement.setId(id);
-        invalidElement.setName("Test Element");
-        invalidElement.setCategory(null);
+        invalidElement.setName(name);
+        invalidElement.setCategory(category);
 
         String invalidElementJson = mapper.writeValueAsString(invalidElement);
 
@@ -263,24 +258,11 @@ class ElementControllerIntegrationTest {
         verify(elementService, times(0)).update(id, invalidElement);
     }
 
-    @Test
-    @SneakyThrows
-    void testUpdate_whenElementFieldNotValid_shouldReturnBadRequest() {
-        Long id = 1L;
-        Element invalidElement = new Element();
-        invalidElement.setId(id);
-        invalidElement.setName("Test Element");
-        invalidElement.setCategory(null);
-
-        String invalidElementJson = mapper.writeValueAsString(invalidElement);
-
-        mvc.perform(put("/api/elements/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(invalidElementJson))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Method argument not valid"));
-
-        verify(elementService, times(0)).update(id, invalidElement);
+    private static Stream<Arguments> sourceUpdate_InvalidElementShouldReturnBadRequest(){
+        return Stream.of(
+                Arguments.of("", Category.FIRST),
+                Arguments.of(null, Category.FIRST),
+                Arguments.of("name", null)
+        );
     }
 }

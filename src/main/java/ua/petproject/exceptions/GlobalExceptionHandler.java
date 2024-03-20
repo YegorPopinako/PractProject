@@ -19,25 +19,24 @@ public class GlobalExceptionHandler {
     @ResponseStatus
     public ResponseEntity<ErrorResponse> handleEntityNotFoundException(Exception ex) {
         String message;
-        HttpStatus status;
-        switch (ex.getClass().getSimpleName()) {
-            case "EntityNotFoundException":
+        HttpStatus status = switch (ex.getClass().getSimpleName()) {
+            case "EntityNotFoundException" -> {
                 message = "Entity not found";
-                status = HttpStatus.NOT_FOUND;
-                break;
-            case "IllegalArgumentException":
+                yield HttpStatus.NOT_FOUND;
+            }
+            case "IllegalArgumentException" -> {
                 message = "Illegal argument";
-                status = HttpStatus.BAD_REQUEST;
-                break;
-            case "MethodArgumentNotValidException":
+                yield HttpStatus.BAD_REQUEST;
+            }
+            case "MethodArgumentNotValidException" -> {
                 message = "Method argument not valid";
-                status = HttpStatus.BAD_REQUEST;
-                break;
-            default:
+                yield HttpStatus.BAD_REQUEST;
+            }
+            default -> {
                 message = "Internal server error";
-                status = HttpStatus.INTERNAL_SERVER_ERROR;
-                break;
-        }
+                yield HttpStatus.INTERNAL_SERVER_ERROR;
+            }
+        };
         log.error("Entity not found: {}", ex.getMessage(), ex);
         ErrorResponse errorResponse = new ErrorResponse(message);
         return new ResponseEntity<>(errorResponse, status);

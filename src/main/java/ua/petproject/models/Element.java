@@ -1,4 +1,4 @@
-package ua.petproject.model;
+package ua.petproject.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -7,7 +7,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -15,7 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import ua.petproject.model.categories.Category;
+import ua.petproject.models.categories.ElementCategory;
 
 import java.util.Objects;
 
@@ -40,11 +39,11 @@ public class Element {
     @Column(nullable = false)
     @NotNull
     @Enumerated(value = jakarta.persistence.EnumType.STRING)
-    private Category category;
+    private ElementCategory elementCategory;
 
-    public Element(String name, Category category) {
+    public Element(String name, ElementCategory elementCategory) {
         this.name = name;
-        this.category = category;
+        this.elementCategory = elementCategory;
     }
 
     @Override

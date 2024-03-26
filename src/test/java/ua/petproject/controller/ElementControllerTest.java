@@ -5,13 +5,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import ua.petproject.model.Element;
-import ua.petproject.model.categories.Category;
+import ua.petproject.models.Element;
+import ua.petproject.models.categories.ElementCategory;
 import ua.petproject.service.ElementService;
 
-import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -20,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ElementControllerTest {
+class ElementControllerTest {
 
     @Mock
     private ElementService elementService;
@@ -30,8 +27,8 @@ public class ElementControllerTest {
 
     @Test
     public void elementController_addNewElement() {
-        Element elementToAdd = new Element("Test Element", Category.SECOND);
-        Element expectedSavedElement = new Element("Test Element", Category.SECOND);
+        Element elementToAdd = new Element("Test Element", ElementCategory.SECOND);
+        Element expectedSavedElement = new Element("Test Element", ElementCategory.SECOND);
 
         when(elementService.add(elementToAdd)).thenReturn(expectedSavedElement);
 
@@ -43,7 +40,7 @@ public class ElementControllerTest {
     @Test
     public void elementController_getById() {
         Long id = 1L;
-        Element expectedElement = new Element("Element 1", Category.FIRST);
+        Element expectedElement = new Element("Element 1", ElementCategory.FIRST);
 
         when(elementService.get(id)).thenReturn(expectedElement);
 
@@ -54,24 +51,24 @@ public class ElementControllerTest {
 
     @Test
     public void elementController_getElementsByCategory() {
-        Category expectedCategory = Category.FIRST;
-        List<Element> expectedElements = Arrays.asList(new Element("Element 1", Category.FIRST),
-                new Element("Element 2", Category.FIRST));
+        ElementCategory expectedElementCategory = ElementCategory.FIRST;
+        List<Element> expectedElements = Arrays.asList(new Element("Element 1", ElementCategory.FIRST),
+                new Element("Element 2", ElementCategory.FIRST));
 
-        when(elementService.getAll(expectedCategory)).thenReturn(expectedElements);
+        when(elementService.getAll(expectedElementCategory)).thenReturn(expectedElements);
 
-        List<Element> response = elementController.getAll(expectedCategory);
+        List<Element> response = elementController.getAll(expectedElementCategory);
 
         assertThat(response).isEqualTo(expectedElements);
     }
 
     @Test
     public void elementController_getElementsByCategory_EmptyList() {
-        Category category = Category.FIRST;
+        ElementCategory elementCategory = ElementCategory.FIRST;
 
-        when(elementService.getAll(category)).thenReturn(Collections.emptyList());
+        when(elementService.getAll(elementCategory)).thenReturn(Collections.emptyList());
 
-        List<Element> response = elementController.getAll(category);
+        List<Element> response = elementController.getAll(elementCategory);
 
         assertThat(response).isEmpty();
     }
@@ -79,7 +76,7 @@ public class ElementControllerTest {
     @Test
     public void elementController_updateElement() {
         long id = 1L;
-        Element updatedElement = new Element("Updated Element 1", Category.FIRST);
+        Element updatedElement = new Element("Updated Element 1", ElementCategory.FIRST);
 
         when(elementService.update(id, updatedElement)).thenReturn(updatedElement);
 

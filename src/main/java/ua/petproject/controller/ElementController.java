@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ua.petproject.model.Element;
-import ua.petproject.model.categories.Category;
+import ua.petproject.models.Element;
+import ua.petproject.models.categories.ElementCategory;
 import ua.petproject.service.ElementService;
 
 import java.util.List;
@@ -40,8 +40,8 @@ public class ElementController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Element> getAll(@RequestParam Category category) {
-        return elementService.getAll(category);
+    public List<Element> getAll(@RequestParam ElementCategory elementCategory) {
+        return elementService.getAll(elementCategory);
     }
 
     @PutMapping("/{id}")

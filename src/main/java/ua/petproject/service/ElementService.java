@@ -2,8 +2,8 @@ package ua.petproject.service;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
-import ua.petproject.model.Element;
-import ua.petproject.model.categories.Category;
+import ua.petproject.models.Element;
+import ua.petproject.models.categories.ElementCategory;
 
 import java.util.List;
 
@@ -32,10 +32,10 @@ public interface ElementService {
     /**
      * Retrieves all elements by category.
      *
-     * @param category The category by which to filter the elements.
+     * @param elementCategory The category by which to filter the elements.
      * @return The list of retrieved elements.
      */
-    List<Element> getAll(@Nullable Category category);
+    List<Element> getAll(@Nullable ElementCategory elementCategory);
 
     /**
      * Updates an existing element.

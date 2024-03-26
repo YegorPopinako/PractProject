@@ -4,8 +4,8 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ua.petproject.model.Element;
-import ua.petproject.model.categories.Category;
+import ua.petproject.models.Element;
+import ua.petproject.models.categories.ElementCategory;
 import ua.petproject.repository.ElementRepository;
 import ua.petproject.service.ElementService;
 
@@ -33,8 +33,8 @@ public class ElementServiceImpl implements ElementService {
     }
 
     @Override
-    public List<Element> getAll(Category category) {
-        return elementRepository.findByCategory(category);
+    public List<Element> getAll(ElementCategory elementCategory) {
+        return elementRepository.findByElementCategory(elementCategory);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class ElementServiceImpl implements ElementService {
         try {
             Element existingElement = get(id);
             existingElement.setName(element.getName());
-            existingElement.setCategory(element.getCategory());
+            existingElement.setElementCategory(element.getElementCategory());
             return existingElement;
         } catch (EntityNotFoundException ex) {
             throw new EntityNotFoundException("Entity with ID " + id + " not found.");

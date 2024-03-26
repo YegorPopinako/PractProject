@@ -7,8 +7,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import ua.petproject.model.Element;
-import ua.petproject.model.categories.Category;
+import ua.petproject.models.Element;
+import ua.petproject.models.categories.ElementCategory;
 import ua.petproject.repository.ElementRepository;
 
 import java.util.List;
@@ -28,7 +28,7 @@ class ElementServiceImplTest {
 
     @Test
     void elementService_AddElement() {
-        Element element = new Element("Element 1", Category.FIRST);
+        Element element = new Element("Element 1", ElementCategory.FIRST);
 
         when(elementRepository.save(element)).thenReturn(element);
 
@@ -39,7 +39,7 @@ class ElementServiceImplTest {
     @Test
     void elementService_GetElementById() {
         long id = 1L;
-        Element element = new Element("Element 1", Category.FIRST);
+        Element element = new Element("Element 1", ElementCategory.FIRST);
 
         when(elementRepository.findById(id)).thenReturn(Optional.ofNullable(element));
 
@@ -50,22 +50,22 @@ class ElementServiceImplTest {
 
     @Test
     void elementService_GetAllByCategory() {
-        Category category = Category.FIRST;
-        Element element = new Element("Element 1", category);
-        Element element2 = new Element("Element 2", category);
-        Element element3 = new Element("Element 3", category);
+        ElementCategory elementCategory = ElementCategory.FIRST;
+        Element element = new Element("Element 1", elementCategory);
+        Element element2 = new Element("Element 2", elementCategory);
+        Element element3 = new Element("Element 3", elementCategory);
 
-        when(elementRepository.findByCategory(category)).thenReturn(List.of(element, element2, element3));
+        when(elementRepository.findByElementCategory(elementCategory)).thenReturn(List.of(element, element2, element3));
 
-        List<Element> result = elementService.getAll(category);
+        List<Element> result = elementService.getAll(elementCategory);
         assertEquals(List.of(element, element2, element3), result);
     }
 
     @Test
     void elementService_UpdateElement() {
         long id = 1L;
-        Element originalElement = new Element("Element 1", Category.FIRST);
-        Element updatedElement = new Element("Updated Element 1", Category.FIRST);
+        Element originalElement = new Element("Element 1", ElementCategory.FIRST);
+        Element updatedElement = new Element("Updated Element 1", ElementCategory.FIRST);
 
         when(elementRepository.findById(id)).thenReturn(Optional.ofNullable(originalElement));
 
@@ -95,7 +95,7 @@ class ElementServiceImplTest {
     @Test
     void elementService_UpdateElement_ElementNotFound() {
         long id = 1L;
-        Element updatedElement = new Element("Updated Element 1", Category.FIRST);
+        Element updatedElement = new Element("Updated Element 1", ElementCategory.FIRST);
 
         when(elementRepository.findById(id)).thenReturn(Optional.empty());
 

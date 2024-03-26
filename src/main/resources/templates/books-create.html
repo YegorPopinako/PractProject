@@ -1,0 +1,71 @@
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+<head>
+    <title>Book Create</title>
+</head>
+<body class="d-flex flex-column h-100">
+<main class="flex-shrink-0">
+    <section layout:fragment="body" class="py-5">
+        <div class="container">
+            <form role="form" method="post" th:action="@{/api/books/new}" th:object="${book}">
+                <div class="form-row">
+                    <div class="form-group col-md6">
+                        <label for="name">Book name</label>
+                        <input
+                                type="text"
+                                class="form-control"
+                                id="name"
+                                name="name"
+                                th:field="*{name}"
+                                placeholder="Book name">
+                    </div>
+                    <div class="form-group col-md6">
+                        <label for="category">Category</label>
+                        <input
+                                type="text"
+                                class="form-control"
+                                id="category"
+                                name="category"
+                                th:field="*{bookCategory}"
+                                placeholder="Book category">
+                    </div>
+                    <div class="form-group col-md6">
+                        <label for="author">Author</label>
+                        <input
+                                type="text"
+                                class="form-control"
+                                id="author"
+                                name="author"
+                                th:field="*{authorName}"
+                                placeholder="Author initials">
+                    </div>
+                    <div class="form-group col-md6">
+                        <label for="publishingHouse">Publisher</label>
+                        <input
+                                type="text"
+                                class="form-control"
+                                id="publishingHouse"
+                                name="publishingHouse"
+                                th:field="*{publishingHouseName}"
+                                placeholder="Publishing house">
+                    </div>
+                    <div class="form-group col-md6 mb-3">
+                        <label for="photoUrl">PhotoUrl</label>
+                        <input
+                                type="text"
+                                class="form-control"
+                                id="photoUrl"
+                                name="photoUrl"
+                                th:field="*{photoUrl}"
+                                placeholder="Photo Url">
+                    </div>
+                <button type="submit" class="btn btn-primary">Sign in</button>
+            </div>
+            </form>
+        </div>
+    </section>
+</main>
+</body>
+</html>

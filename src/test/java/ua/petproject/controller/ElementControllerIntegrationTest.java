@@ -23,14 +23,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.SneakyThrows;
-import ua.petproject.model.Element;
-import ua.petproject.model.categories.Category;
+import ua.petproject.models.Element;
+import ua.petproject.models.categories.ElementCategory;
 import ua.petproject.service.ElementService;
 
 import java.util.List;
 import java.util.stream.Stream;
 
-@WebMvcTest({ ElementController.class })
+@WebMvcTest(ElementController.class)
 class ElementControllerIntegrationTest {
 
     @Autowired
@@ -47,7 +47,7 @@ class ElementControllerIntegrationTest {
     void testAdd_shouldReturnStatusCodeIsCreated() {
         var element = new Element();
         element.setName("username");
-        element.setCategory(Category.FIRST);
+        element.setElementCategory(ElementCategory.FIRST);
 
         var elementAsString = mapper.writeValueAsString(element);
 
@@ -59,7 +59,7 @@ class ElementControllerIntegrationTest {
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("username"))
-                .andExpect(jsonPath("$.category").value(Category.FIRST.toString()));
+                .andExpect(jsonPath("$.elementCategory").value(ElementCategory.FIRST.toString()));
     }
 
     @Test
@@ -69,7 +69,7 @@ class ElementControllerIntegrationTest {
         var elementAsString = """
                 {
                     "name": "username",
-                    "category": INVALID
+                    "elementCategory": INVALID
                 }
                 """;
 
@@ -99,7 +99,7 @@ class ElementControllerIntegrationTest {
         var element = new Element();
         element.setId(id);
         element.setName("username");
-        element.setCategory(Category.FIRST);
+        element.setElementCategory(ElementCategory.FIRST);
 
         when(elementService.get(id)).thenReturn(element);
 
@@ -108,7 +108,7 @@ class ElementControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.name").value("username"))
-                .andExpect(jsonPath("$.category").value(Category.FIRST.toString()));
+                .andExpect(jsonPath("$.elementCategory").value(ElementCategory.FIRST.toString()));
     }
 
     @Test
@@ -129,22 +129,22 @@ class ElementControllerIntegrationTest {
     void testGetAll_shouldReturnStatusCodeOk() {
         var element1 = new Element();
         element1.setName("username1");
-        element1.setCategory(Category.FIRST);
+        element1.setElementCategory(ElementCategory.FIRST);
 
         var element2 = new Element();
         element2.setName("username2");
-        element2.setCategory(Category.FIRST);
+        element2.setElementCategory(ElementCategory.FIRST);
 
-        when(elementService.getAll(Category.FIRST)).thenReturn(List.of(element1, element2));
+        when(elementService.getAll(ElementCategory.FIRST)).thenReturn(List.of(element1, element2));
 
         mvc.perform(get("/api/elements")
-                        .param("category", Category.FIRST.toString()))
+                        .param("elementCategory", ElementCategory.FIRST.toString()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("username1"))
-                .andExpect(jsonPath("$[0].category").value(Category.FIRST.toString()))
+                .andExpect(jsonPath("$[0].elementCategory").value(ElementCategory.FIRST.toString()))
                 .andExpect(jsonPath("$[1].name").value("username2"))
-                .andExpect(jsonPath("$[1].category").value(Category.FIRST.toString()));
+                .andExpect(jsonPath("$[1].elementCategory").value(ElementCategory.FIRST.toString()));
     }
 
     @Test
@@ -155,7 +155,7 @@ class ElementControllerIntegrationTest {
         var updatedElement = new Element();
         updatedElement.setId(id);
         updatedElement.setName("username2");
-        updatedElement.setCategory(Category.SECOND);
+        updatedElement.setElementCategory(ElementCategory.SECOND);
 
         when(elementService.update(id, updatedElement)).thenReturn(updatedElement);
 
@@ -168,7 +168,7 @@ class ElementControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.name").value(updatedElement.getName()))
-                .andExpect(jsonPath("$.category").value(updatedElement.getCategory().toString()));
+                .andExpect(jsonPath("$.elementCategory").value(updatedElement.getElementCategory().toString()));
     }
 
     @Test
@@ -178,7 +178,7 @@ class ElementControllerIntegrationTest {
         var updatedElement = new Element();
         updatedElement.setId(id);
         updatedElement.setName("username2");
-        updatedElement.setCategory(Category.SECOND);
+        updatedElement.setElementCategory(ElementCategory.SECOND);
 
         when(elementService.update(id, updatedElement)).thenThrow(EntityNotFoundException.class);
 
@@ -214,15 +214,15 @@ class ElementControllerIntegrationTest {
                 .andExpect(status().isNotFound());
     }
 
-    @ParameterizedTest(name = "when name is `{0}` and category is `{1}`")
+    @ParameterizedTest(name = "when name is `{0}` and elementCategory is `{1}`")
     @MethodSource("sourceUpdate_InvalidElementShouldReturnBadRequest")
     @SneakyThrows
-    void testAdd_ElementWithNullCategoryShouldReturnBadRequest(String name, Category category) {
+    void testAdd_ElementWithNullCategoryShouldReturnBadRequest(String name, ElementCategory elementCategory) {
         Long id = 1L;
         var invalidElement = new Element();
         invalidElement.setId(id);
         invalidElement.setName(name);
-        invalidElement.setCategory(category);
+        invalidElement.setElementCategory(elementCategory);
 
         var elementAsString = mapper.writeValueAsString(invalidElement);
 
@@ -236,15 +236,15 @@ class ElementControllerIntegrationTest {
         verify(elementService, times(0)).add(invalidElement);
     }
 
-    @ParameterizedTest(name = "when name is `{0}` and category is `{1}`")
+    @ParameterizedTest(name = "when name is `{0}` and elementCategory is `{1}`")
     @MethodSource("sourceUpdate_InvalidElementShouldReturnBadRequest")
     @SneakyThrows
-    void testUpdate_whenElementFieldNotValid_shouldReturnBadRequest(String name, Category category) {
+    void testUpdate_whenElementFieldNotValid_shouldReturnBadRequest(String name, ElementCategory elementCategory) {
         Long id = 1L;
         var invalidElement = new Element();
         invalidElement.setId(id);
         invalidElement.setName(name);
-        invalidElement.setCategory(category);
+        invalidElement.setElementCategory(elementCategory);
 
         String invalidElementJson = mapper.writeValueAsString(invalidElement);
 
@@ -260,8 +260,8 @@ class ElementControllerIntegrationTest {
 
     private static Stream<Arguments> sourceUpdate_InvalidElementShouldReturnBadRequest(){
         return Stream.of(
-                Arguments.of("", Category.FIRST),
-                Arguments.of(null, Category.FIRST),
+                Arguments.of("", ElementCategory.FIRST),
+                Arguments.of(null, ElementCategory.FIRST),
                 Arguments.of("name", null)
         );
     }

@@ -54,6 +54,12 @@ public class BookServiceImpl implements BookService {
             if (book.getPhotoUrl() != null) {
                 existingBook.setPhotoUrl(book.getPhotoUrl());
             }
+            if (book.getBookCategory() != null) {
+                existingBook.setBookCategory(book.getBookCategory());
+            }
+            if (book.getAuthor() != null) {
+                existingBook.setAuthor(book.getAuthor());
+            }
             if (book.getPublishingHouse() != null) {
                 existingBook.setPublishingHouse(book.getPublishingHouse());
             }

@@ -36,13 +36,6 @@ public class BookController {
         return "books-create";
     }
 
-    @GetMapping
-    public String getAllBooks(Model model) {
-        List<Book> books = bookService.getAllBooks();
-        model.addAttribute("books", books);
-        return "list";
-    }
-
     @PostMapping("/new")
     @ResponseStatus(HttpStatus.CREATED)
     public String add(@ModelAttribute("book") @Valid Book book) {
@@ -56,6 +49,13 @@ public class BookController {
         return "redirect:/api/books";
     }
 
+    @GetMapping
+    public String getAllBooks(Model model) {
+        List<Book> books = bookService.getAllBooks();
+        model.addAttribute("books", books);
+        return "list";
+    }
+
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Book get(@PathVariable Long id) {
@@ -67,6 +67,20 @@ public class BookController {
         List<Book> books = bookService.getAll(BookCategory.FANTASY);
         model.addAttribute("books", books);
         return "list";
+    }
+
+    @GetMapping("/{id}/edit")
+    public String editBookForm(@PathVariable("id") Long id, Model model) {
+        Book book = bookService.get(id);
+        model.addAttribute("book", book);
+        return "books-edit";
+    }
+
+
+    @PostMapping("/{id}/edit")
+    public String editBook(@PathVariable("id") Long id, @ModelAttribute("book") @Valid Book book) {
+        bookService.update(id, book);
+        return "redirect:/api/books";
     }
 
     @PutMapping("/{id}")

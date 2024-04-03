@@ -3,13 +3,14 @@
         xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
         layout:decorate="~{layout}">
 <head>
-    <title>Book Create</title>
+    <title>Book Edit</title>
 </head>
 <body class="d-flex flex-column h-100">
 <main class="flex-shrink-0">
     <section layout:fragment="body" class="py-5">
         <div class="container">
-            <form role="form" method="post" th:action="@{/api/books/new}" th:object="${book}">
+            <form role="form" method="post" th:action="@{/api/books/2/edit}" th:object="${book}">
+            <input type="hidden" th:field="*{id}">
                 <div class="form-row">
                     <div class="form-group col-md6">
                         <label for="name">Book name</label>
@@ -61,8 +62,8 @@
                                 th:field="*{photoUrl}"
                                 placeholder="Photo Url">
                     </div>
-                <button type="submit" class="btn btn-primary">Create</button>
-            </div>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
             </form>
         </div>
     </section>

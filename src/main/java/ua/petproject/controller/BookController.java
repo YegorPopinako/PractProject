@@ -57,9 +57,10 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public Book get(@PathVariable Long id) {
-        return bookService.get(id);
+    public String bookDetails(@PathVariable("id") Long id, Model model) {
+        Book book = bookService.get(id);
+        model.addAttribute("book", book);
+        return "books-details";
     }
 
     @GetMapping("/fantasy")
@@ -76,22 +77,15 @@ public class BookController {
         return "books-edit";
     }
 
-
     @PostMapping("/{id}/edit")
     public String editBook(@PathVariable("id") Long id, @ModelAttribute("book") @Valid Book book) {
         bookService.update(id, book);
         return "redirect:/api/books";
     }
 
-    @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public Book update(@PathVariable Long id, @Valid @RequestBody Book book) {
-        return bookService.update(id, book);
-    }
-
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
+    @GetMapping("/{id}/delete")
+    public String deleteBook(@PathVariable("id") Long id) {
         bookService.delete(id);
+        return "redirect:/api/books";
     }
 }

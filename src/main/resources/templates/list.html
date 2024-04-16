@@ -1,7 +1,10 @@
-<html
-        xmlns:th="http://www.thymeleaf.org"
-        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-        layout:decorate="~{layout}">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+<head>
+    <title>Our Books</title>
+</head>
+
 <body class="d-flex flex-column h-100">
 <main class="flex-shrink-0">
     <section layout:fragment="body" class="py-5">
@@ -12,18 +15,21 @@
             </div>
             <div class="row gx-5">
                 <div th:each="book : ${books}" class="col-lg-6 mb-2">
-                    <div class="card mb-3" style="border: none;">
-                        <img class="card-img-top img-fluid" th:src="${book.photoUrl}" alt="..."
-                             style="max-width: 300px; max-height: 500px; object-fit: cover;">
-                        <div class="card-body">
-                            <a th:text ="${book.name}" class="card-title h3 fw-bolder text-decoration-none link-dark stretched-link" href="#!">Project name</a>
+                    <a th:href="@{'/api/books/' + ${book.id}}" class="text-decoration-none link-dark">
+                        <div>
+                            <img class="card-img-top img-fluid" th:src="${book.photoUrl}" alt="..."
+                                 style="max-width: 300px; max-height: 500px; object-fit: cover;">
+                            <div class="card-body">
+                                <h5 class="card-title h3 fw-bolder" th:text="${book.name}">Project name</h5>
+                            </div>
                         </div>
-                    </div>
-                    <a class="btn btn-primary" th:href="@{/api/books/{bookId}/edit(bookId=${book.id})}">Edit</a>
+                    </a>
+                    <a class="btn btn-primary" th:href="@{'/api/books/' + ${book.id} + '/edit'}">Edit</a>
                 </div>
             </div>
         </div>
     </section>
 </main>
 </body>
+
 </html>

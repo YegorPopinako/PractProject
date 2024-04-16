@@ -63,7 +63,7 @@ public class BookServiceImpl implements BookService {
             if (book.getPublishingHouse() != null) {
                 existingBook.setPublishingHouse(book.getPublishingHouse());
             }
-            return bookRepository.save(existingBook);
+            return existingBook;
         } catch (EntityNotFoundException ex) {
             throw new EntityNotFoundException("Book with ID " + id + " not found.");
         }

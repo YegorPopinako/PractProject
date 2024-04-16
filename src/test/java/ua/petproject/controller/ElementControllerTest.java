@@ -26,7 +26,7 @@ class ElementControllerTest {
     private ElementController elementController;
 
     @Test
-    public void elementController_addNewElement() {
+    void elementController_addNewElement() {
         Element elementToAdd = new Element("Test Element", ElementCategory.SECOND);
         Element expectedSavedElement = new Element("Test Element", ElementCategory.SECOND);
 
@@ -38,7 +38,7 @@ class ElementControllerTest {
     }
 
     @Test
-    public void elementController_getById() {
+    void elementController_getById() {
         Long id = 1L;
         Element expectedElement = new Element("Element 1", ElementCategory.FIRST);
 
@@ -50,7 +50,7 @@ class ElementControllerTest {
     }
 
     @Test
-    public void elementController_getElementsByCategory() {
+    void elementController_getElementsByCategory() {
         ElementCategory expectedElementCategory = ElementCategory.FIRST;
         List<Element> expectedElements = Arrays.asList(new Element("Element 1", ElementCategory.FIRST),
                 new Element("Element 2", ElementCategory.FIRST));
@@ -63,7 +63,7 @@ class ElementControllerTest {
     }
 
     @Test
-    public void elementController_getElementsByCategory_EmptyList() {
+    void elementController_getElementsByCategory_EmptyList() {
         ElementCategory elementCategory = ElementCategory.FIRST;
 
         when(elementService.getAll(elementCategory)).thenReturn(Collections.emptyList());
@@ -74,7 +74,7 @@ class ElementControllerTest {
     }
 
     @Test
-    public void elementController_updateElement() {
+    void elementController_updateElement() {
         long id = 1L;
         Element updatedElement = new Element("Updated Element 1", ElementCategory.FIRST);
 
@@ -86,7 +86,7 @@ class ElementControllerTest {
     }
 
     @Test
-    public void elementController_deleteElement() {
+    void elementController_deleteElement() {
         long id = 1L;
 
         elementController.delete(id);

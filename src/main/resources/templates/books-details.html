@@ -73,13 +73,20 @@
                     </div>
                     <!-- Categories widget-->
                     <div class="card mb-4">
-                        <div class="card-header">Categories</div>
+                        <div class="card-header">Category</div>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-sm-6">
                                     <ul class="list-unstyled mb-0">
-                                        <li><a href="https://en.wikipedia.org/wiki/Urban_fantasy" target="_blank">Urban fantasy</a></li>
-                                        <li><a href="https://en.wikipedia.org/wiki/Low_fantasy#:~:text=Low%20fantasy%2C%20or%20intrusion%20fantasy,of%20rules%20and%20physical%20laws." target="_blank">Low fantasy</a></li>
+                                        <li th:if="${book.bookCategory == book.bookCategory.FANTASY}">
+                                            <a href="https://en.wikipedia.org/wiki/Fantasy_literature" target="_blank">Fantasy</a>
+                                        </li>
+                                        <li th:if="${book.bookCategory == book.bookCategory.HORROR}">
+                                            <a href="https://en.wikipedia.org/wiki/Horror_fiction" target="_blank">Horror</a>
+                                        </li>
+                                        <li th:if="${book.bookCategory == book.bookCategory.SCI_FI}">
+                                            <a href="https://en.wikipedia.org/wiki/Science_fiction" target="=_blank">SCI-FI</a>
+                                        </li>
                                     </ul>
                                 </div>
                             </div>

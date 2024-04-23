@@ -27,9 +27,6 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public Book add(Book book) {
-        if (book == null) {
-            throw new NullPointerException("Book can't be null");
-        }
         return bookRepository.save(book);
     }
 

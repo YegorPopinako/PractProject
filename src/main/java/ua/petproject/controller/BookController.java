@@ -2,18 +2,13 @@ package ua.petproject.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import ua.petproject.models.Author;
 import ua.petproject.models.Book;
 import ua.petproject.models.PublishingHouse;
@@ -37,7 +32,6 @@ public class BookController {
     }
 
     @PostMapping("/new")
-    @ResponseStatus(HttpStatus.CREATED)
     public String add(@ModelAttribute("book") @Valid Book book) {
         String authorName = book.getAuthorName();
         String publishingHouseName = book.getPublishingHouseName();

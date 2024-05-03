@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ua.petproject.models.Element;
-import ua.petproject.models.categories.ElementCategory;
+import ua.petproject.models.enums.ElementCategory;
 import ua.petproject.repository.ElementRepository;
 
 import java.util.List;

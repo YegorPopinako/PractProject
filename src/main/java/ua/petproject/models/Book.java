@@ -1,5 +1,6 @@
 package ua.petproject.models;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -16,11 +17,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import ua.petproject.models.categories.BookCategory;
-import ua.petproject.repository.AuthorRepository;
+import ua.petproject.models.enums.BookCategory;
 
 import java.util.Objects;
-import java.util.SimpleTimeZone;
 
 @Getter
 @Setter
@@ -53,7 +52,7 @@ public class Book {
     @JoinColumn(name = "publishing_house_id")
     private PublishingHouse publishingHouse;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "author_id")
     private Author author;
 

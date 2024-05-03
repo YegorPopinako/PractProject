@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ua.petproject.models.Author;
 import ua.petproject.models.Book;
 import ua.petproject.models.PublishingHouse;
-import ua.petproject.models.categories.BookCategory;
+import ua.petproject.models.enums.BookCategory;
 import ua.petproject.repository.AuthorRepository;
 import ua.petproject.repository.BookRepository;
 import ua.petproject.repository.PublishingHouseRepository;

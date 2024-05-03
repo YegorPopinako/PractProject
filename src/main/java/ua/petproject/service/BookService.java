@@ -1,11 +1,11 @@
 package ua.petproject.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import ua.petproject.models.Author;
 import ua.petproject.models.Book;
 import ua.petproject.models.PublishingHouse;
-import ua.petproject.models.categories.BookCategory;
-import ua.petproject.models.categories.ElementCategory;
+import ua.petproject.models.enums.BookCategory;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ public interface BookService {
     /**
      * Retrieves all books by category.
      *
-     * @param elementCategory The category by which to filter the books.
+     * @param bookCategory The category by which to filter the books.
      * @return The list of retrieved books.
      */
     List<Book> getAll(BookCategory bookCategory);
@@ -43,7 +43,7 @@ public interface BookService {
      * @param book The new data for the book.
      * @return Updated book.
      */
-    Book update(Long id, Book book);
+    Book update(Long id, @Valid Book book);
 
     /**
      * Deletes a book from the system by its ID.

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ua.petproject.models.Author;
 import ua.petproject.models.Book;
 import ua.petproject.models.PublishingHouse;
-import ua.petproject.models.categories.BookCategory;
+import ua.petproject.models.enums.BookCategory;
 import ua.petproject.service.BookService;
 
 import java.util.List;

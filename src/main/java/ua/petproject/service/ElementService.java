@@ -3,7 +3,7 @@ package ua.petproject.service;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
 import ua.petproject.models.Element;
-import ua.petproject.models.categories.ElementCategory;
+import ua.petproject.models.enums.ElementCategory;
 
 import java.util.List;
 

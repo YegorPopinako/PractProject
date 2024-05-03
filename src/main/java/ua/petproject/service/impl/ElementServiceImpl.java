@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.petproject.models.Element;
-import ua.petproject.models.categories.ElementCategory;
+import ua.petproject.models.enums.ElementCategory;
 import ua.petproject.repository.ElementRepository;
 import ua.petproject.service.ElementService;
 

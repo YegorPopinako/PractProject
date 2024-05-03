@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ua.petproject.models.Element;
-import ua.petproject.models.categories.ElementCategory;
+import ua.petproject.models.enums.ElementCategory;
 import ua.petproject.service.ElementService;
 
 import java.util.List;

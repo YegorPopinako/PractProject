@@ -14,7 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import ua.petproject.models.categories.ElementCategory;
+import ua.petproject.models.enums.ElementCategory;
 
 import java.util.Objects;
 

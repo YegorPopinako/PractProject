@@ -1,4 +1,4 @@
-package ua.petproject.models.categories;
+package ua.petproject.models.enums;
 
 public enum ElementCategory {
     FIRST,

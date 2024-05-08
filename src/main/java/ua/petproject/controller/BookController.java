@@ -4,10 +4,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ua.petproject.models.Author;
 import ua.petproject.models.Book;
@@ -71,13 +73,13 @@ public class BookController {
         return "books-edit";
     }
 
-    @PostMapping("/{id}/edit")
+    @PutMapping("/{id}/edit")
     public String editBook(@PathVariable("id") Long id, @ModelAttribute("book") @Valid Book book) {
         bookService.update(id, book);
         return "redirect:/api/books";
     }
 
-    @GetMapping("/{id}/delete")
+    @DeleteMapping("/{id}/delete")
     public String deleteBook(@PathVariable("id") Long id) {
         bookService.delete(id);
         return "redirect:/api/books";

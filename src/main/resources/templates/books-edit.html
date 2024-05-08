@@ -10,7 +10,8 @@
     <section layout:fragment="body" class="py-5">
         <div class="container">
             <form role="form" method="post" th:action="@{/api/books/{bookId}/edit(bookId=${book.id})}" th:object="${book}">
-            <input type="hidden" th:field="*{id}">
+                <input type="hidden" name="_method" th:value="'PUT'">
+                <input type="hidden" th:field="*{id}">
                 <div class="form-row">
                     <div class="form-group col-md6">
                         <label for="name">Book name</label>
@@ -60,7 +61,7 @@
                                 th:field="*{photoUrl}"
                                 placeholder="Photo Url">
                     </div>
-                    <button type="submit" class="btn btn-primary">Create</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
                 </div>
             </form>
         </div>

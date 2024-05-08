@@ -2,6 +2,7 @@ package ua.petproject.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.petproject.models.Author;
@@ -45,26 +46,13 @@ public class BookServiceImpl implements BookService {
     public Book update(Long id, Book book) {
         try {
             Book existingBook = get(id);
-            if (book.getName() != null) {
-                existingBook.setName(book.getName());
-            }
-            if (book.getPhotoUrl() != null) {
-                existingBook.setPhotoUrl(book.getPhotoUrl());
-            }
-            if (book.getBookCategory() != null) {
-                existingBook.setBookCategory(book.getBookCategory());
-            }
-            if (book.getAuthor() != null) {
-                existingBook.setAuthor(book.getAuthor());
-            }
-            if (book.getPublishingHouse() != null) {
-                existingBook.setPublishingHouse(book.getPublishingHouse());
-            }
+            BeanUtils.copyProperties(book, existingBook, "id");
             return existingBook;
         } catch (EntityNotFoundException ex) {
             throw new EntityNotFoundException("Book with ID " + id + " not found.");
         }
     }
+
 
     @Override
     @Transactional

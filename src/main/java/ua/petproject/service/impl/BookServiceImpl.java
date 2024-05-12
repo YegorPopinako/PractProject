@@ -22,12 +22,20 @@ import java.util.List;
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
+
     private final AuthorRepository authorRepository;
+
     private final PublishingHouseRepository publishingHouseRepository;
 
     @Override
     @Transactional
     public Book add(Book book) {
+        String authorName = book.getAuthorName();
+        String publishingHouseName = book.getPublishingHouseName();
+        Author author = findOrCreateAuthor(authorName);
+        PublishingHouse publishingHouse = findOrCreatePublishingHouse(publishingHouseName);
+        book.setAuthor(author);
+        book.setPublishingHouse(publishingHouse);
         return bookRepository.save(book);
     }
 
@@ -39,6 +47,11 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<Book> getAll(BookCategory bookCategory) {
         return bookRepository.findByBookCategory(bookCategory);
+    }
+
+    @Override
+    public List<Book> getAllBooks() {
+        return bookRepository.findAll();
     }
 
     @Override
@@ -63,8 +76,7 @@ public class BookServiceImpl implements BookService {
         bookRepository.deleteById(id);
     }
 
-    @Transactional
-    public Author findOrCreateAuthor(String authorName) {
+    private Author findOrCreateAuthor(String authorName) {
         Author author = authorRepository.findByName(authorName);
         if (author == null) {
             author = authorRepository.save(new Author(authorName));
@@ -72,17 +84,11 @@ public class BookServiceImpl implements BookService {
         return author;
     }
 
-    @Transactional
-    public PublishingHouse findOrCreatePublishingHouse(String publishingHouseName) {
+    private PublishingHouse findOrCreatePublishingHouse(String publishingHouseName) {
         PublishingHouse publishingHouse = publishingHouseRepository.findByName(publishingHouseName);
         if (publishingHouse == null) {
             publishingHouse = publishingHouseRepository.save(new PublishingHouse(publishingHouseName));
         }
         return publishingHouse;
-    }
-
-    @Override
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
     }
 }

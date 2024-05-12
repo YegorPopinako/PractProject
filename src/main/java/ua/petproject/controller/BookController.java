@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import ua.petproject.models.Author;
 import ua.petproject.models.Book;
-import ua.petproject.models.PublishingHouse;
 import ua.petproject.models.enums.BookCategory;
 import ua.petproject.service.BookService;
 
@@ -35,12 +33,6 @@ public class BookController {
 
     @PostMapping("/new")
     public String add(@ModelAttribute("book") @Valid Book book) {
-        String authorName = book.getAuthorName();
-        String publishingHouseName = book.getPublishingHouseName();
-        Author author = bookService.findOrCreateAuthor(authorName);
-        PublishingHouse publishingHouse = bookService.findOrCreatePublishingHouse(publishingHouseName);
-        book.setAuthor(author);
-        book.setPublishingHouse(publishingHouse);
         bookService.add(book);
         return "redirect:/api/books";
     }

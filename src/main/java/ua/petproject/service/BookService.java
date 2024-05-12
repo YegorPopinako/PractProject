@@ -46,6 +46,13 @@ public interface BookService {
     Book update(Long id, @Valid Book book);
 
     /**
+     * Retrieves all books from the database.
+     *
+     * @return The list of retrieved books.
+     */
+    List<Book> getAllBooks();
+
+    /**
      * Deletes a book from the system by its ID.
      *
      * @param id The ID of the book to be deleted.
@@ -53,9 +60,4 @@ public interface BookService {
      */
     void delete(Long id) throws EntityNotFoundException;
 
-    Author findOrCreateAuthor(String authorName);
-
-    PublishingHouse findOrCreatePublishingHouse(String publishingHouseName);
-
-    List<Book> getAllBooks();
 }

@@ -9,10 +9,10 @@ import ua.petproject.models.Author;
 import ua.petproject.models.Book;
 import ua.petproject.models.PublishingHouse;
 import ua.petproject.models.enums.BookCategory;
-import ua.petproject.repository.AuthorRepository;
 import ua.petproject.repository.BookRepository;
-import ua.petproject.repository.PublishingHouseRepository;
+import ua.petproject.service.AuthorService;
 import ua.petproject.service.BookService;
+import ua.petproject.service.PublishingHouseService;
 
 import java.util.List;
 
@@ -23,17 +23,15 @@ public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
 
-    private final AuthorRepository authorRepository;
+    private final AuthorService authorService;
 
-    private final PublishingHouseRepository publishingHouseRepository;
+    private final PublishingHouseService publishingHouseService;
 
     @Override
     @Transactional
     public Book add(Book book) {
-        String authorName = book.getAuthorName();
-        String publishingHouseName = book.getPublishingHouseName();
-        Author author = findOrCreateAuthor(authorName);
-        PublishingHouse publishingHouse = findOrCreatePublishingHouse(publishingHouseName);
+        Author author = authorService.findOrCreateAuthor(book.getAuthorName());
+        PublishingHouse publishingHouse = publishingHouseService.findOrCreatePublishingHouse(book.getPublishingHouseName());
         book.setAuthor(author);
         book.setPublishingHouse(publishingHouse);
         return bookRepository.save(book);
@@ -66,7 +64,6 @@ public class BookServiceImpl implements BookService {
         }
     }
 
-
     @Override
     @Transactional
     public void delete(Long id) {
@@ -74,21 +71,5 @@ public class BookServiceImpl implements BookService {
             throw new EntityNotFoundException("Book not found");
         }
         bookRepository.deleteById(id);
-    }
-
-    private Author findOrCreateAuthor(String authorName) {
-        Author author = authorRepository.findByName(authorName);
-        if (author == null) {
-            author = authorRepository.save(new Author(authorName));
-        }
-        return author;
-    }
-
-    private PublishingHouse findOrCreatePublishingHouse(String publishingHouseName) {
-        PublishingHouse publishingHouse = publishingHouseRepository.findByName(publishingHouseName);
-        if (publishingHouse == null) {
-            publishingHouse = publishingHouseRepository.save(new PublishingHouse(publishingHouseName));
-        }
-        return publishingHouse;
     }
 }

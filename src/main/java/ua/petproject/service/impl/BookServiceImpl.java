@@ -2,7 +2,6 @@ package ua.petproject.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.petproject.models.Author;
@@ -15,6 +14,7 @@ import ua.petproject.service.BookService;
 import ua.petproject.service.PublishingHouseService;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional(readOnly = true)
@@ -54,22 +54,40 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public Book update(Long id, Book book) {
-        try {
-            Book existingBook = get(id);
-            BeanUtils.copyProperties(book, existingBook, "id");
-            return existingBook;
-        } catch (EntityNotFoundException ex) {
-            throw new EntityNotFoundException("Book with ID " + id + " not found.");
-        }
-    }
-
-    @Override
-    @Transactional
     public void delete(Long id) {
         if (!bookRepository.existsById(id)) {
             throw new EntityNotFoundException("Book not found");
         }
         bookRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public Book partialUpdate(Long id, Map<String, String> updates) {
+        try {
+            Book existingBook = get(id);
+            updates.forEach((key, value) -> {
+                switch (key) {
+                    case "name":
+                        existingBook.setName(value);
+                        break;
+                    case "bookCategory":
+                        existingBook.setBookCategory(BookCategory.valueOf(value));
+                        break;
+                    case "authorName":
+                        existingBook.setAuthorName(value);
+                        break;
+                    case "publishingHouseName":
+                        existingBook.setPublishingHouseName(value);
+                        break;
+                    case "photoUrl":
+                        existingBook.setPhotoUrl(value);
+                        break;
+                }
+            });
+            return existingBook;
+        } catch (EntityNotFoundException ex) {
+            throw new EntityNotFoundException("Book with ID " + id + " not found.");
+        }
     }
 }

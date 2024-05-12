@@ -1,7 +1,5 @@
-<html
-        xmlns:th="http://www.thymeleaf.org"
-        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-        layout:decorate="~{layout}">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 <head>
     <title>Book Edit</title>
 </head>
@@ -9,17 +7,15 @@
 <main class="flex-shrink-0">
     <section layout:fragment="body" class="py-5">
         <div class="container">
-            <form role="form" method="post" th:action="@{/api/books/{bookId}/edit(bookId=${book.id})}" th:object="${book}">
-                <input type="hidden" name="_method" th:value="'PUT'">
-                <input type="hidden" th:field="*{id}">
+            <form role="form" method="post" th:action="@{/api/books/{bookId}/edit(bookId=${book.id})}" th:object="${book}" enctype="application/x-www-form-urlencoded">
+                <input type="hidden" name="_method" th:value="'PATCH'">
                 <div class="form-row">
-                    <div class="form-group col-md6">
+                    <div class="form-group col-md-6">
                         <label for="name">Book name</label>
                         <input
                                 type="text"
                                 class="form-control"
-                                id="name"
-                                name="name"
+                                id="name" name="name"
                                 th:field="*{name}"
                                 placeholder="Book name">
                     </div>
@@ -31,7 +27,7 @@
                             <option value="SCI_FI">Sci-Fi</option>
                         </select>
                     </div>
-                    <div class="form-group col-md6">
+                    <div class="form-group col-md-6">
                         <label for="author">Author</label>
                         <input
                                 type="text"
@@ -41,7 +37,7 @@
                                 th:field="*{authorName}"
                                 placeholder="Author initials">
                     </div>
-                    <div class="form-group col-md6">
+                    <div class="form-group col-md-6">
                         <label for="publishingHouse">Publisher</label>
                         <input
                                 type="text"
@@ -51,7 +47,7 @@
                                 th:field="*{publishingHouseName}"
                                 placeholder="Publishing house">
                     </div>
-                    <div class="form-group col-md6 mb-3">
+                    <div class="form-group col-md-6 mb-3">
                         <label for="photoUrl">PhotoUrl</label>
                         <input
                                 type="text"
@@ -61,8 +57,8 @@
                                 th:field="*{photoUrl}"
                                 placeholder="Photo Url">
                     </div>
-                    <button type="submit" class="btn btn-primary">Save</button>
                 </div>
+                <button type="submit" class="btn btn-primary">Save</button>
             </form>
         </div>
     </section>

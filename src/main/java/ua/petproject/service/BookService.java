@@ -8,6 +8,7 @@ import ua.petproject.models.PublishingHouse;
 import ua.petproject.models.enums.BookCategory;
 
 import java.util.List;
+import java.util.Map;
 
 public interface BookService {
 
@@ -40,10 +41,11 @@ public interface BookService {
      * Updates an existing book.
      *
      * @param id   The ID of the book to be updated.
-     * @param book The new data for the book.
+     * @param updates The new data for the book.
      * @return Updated book.
      */
-    Book update(Long id, @Valid Book book);
+    /*Book update(Long id, @Valid Book book);*/
+    Book partialUpdate(Long id, Map<String, String> updates);
 
     /**
      * Retrieves all books from the database.

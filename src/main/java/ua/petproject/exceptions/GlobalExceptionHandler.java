@@ -41,20 +41,4 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(message);
         return new ResponseEntity<>(errorResponse, status);
     }
-
-/*    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
-        log.error("Illegal argument: {}", ex.getMessage(), ex);
-        ErrorResponse errorResponse = new ErrorResponse("Illegal argument");
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        log.error("Method argument not valid: {}", ex.getMessage(), ex);
-        ErrorResponse errorResponse = new ErrorResponse("Method argument not valid");
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }*/
 }

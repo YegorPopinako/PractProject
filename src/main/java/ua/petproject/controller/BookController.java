@@ -2,20 +2,24 @@ package ua.petproject.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import ua.petproject.models.Book;
 import ua.petproject.models.enums.BookCategory;
 import ua.petproject.service.BookService;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -65,9 +69,9 @@ public class BookController {
         return "books-edit";
     }
 
-    @PutMapping("/{id}/edit")
-    public String editBook(@PathVariable("id") Long id, @ModelAttribute("book") @Valid Book book) {
-        bookService.update(id, book);
+    @PatchMapping("/{id}/edit")
+    public String partialUpdateBook(@PathVariable("id") Long id, @RequestParam Map<String, String> updates) {
+        bookService.partialUpdate(id, updates);
         return "redirect:/api/books";
     }
 

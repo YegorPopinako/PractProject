@@ -6,6 +6,8 @@ import ua.petproject.models.PublishingHouse;
 import ua.petproject.repository.PublishingHouseRepository;
 import ua.petproject.service.PublishingHouseService;
 
+import java.util.Optional;
+
 @Service
 @AllArgsConstructor
 public class PublishingHouseServiceImpl implements PublishingHouseService {
@@ -14,10 +16,7 @@ public class PublishingHouseServiceImpl implements PublishingHouseService {
 
     @Override
     public PublishingHouse findOrCreatePublishingHouse(String publishingHouseName) {
-        PublishingHouse publishingHouse = publishingHouseRepository.findByName(publishingHouseName);
-        if (publishingHouse == null) {
-            publishingHouse = publishingHouseRepository.save(new PublishingHouse(publishingHouseName));
-        }
-        return publishingHouse;
+        Optional<PublishingHouse> publishingHouse = Optional.of(publishingHouseRepository.findByName(publishingHouseName));
+        return publishingHouse.orElseGet(() -> publishingHouseRepository.save(new PublishingHouse(publishingHouseName)));
     }
 }

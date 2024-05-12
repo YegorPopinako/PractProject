@@ -6,6 +6,8 @@ import ua.petproject.models.Author;
 import ua.petproject.repository.AuthorRepository;
 import ua.petproject.service.AuthorService;
 
+import java.util.Optional;
+
 @Service
 @AllArgsConstructor
 public class AuthorServiceImpl implements AuthorService {
@@ -14,10 +16,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public Author findOrCreateAuthor(String authorName) {
-        Author author = authorRepository.findByName(authorName);
-        if (author == null) {
-            author = authorRepository.save(new Author(authorName));
-        }
-        return author;
+        Optional<Author> author = Optional.of(authorRepository.findByName(authorName));
+        return author.orElseGet(() -> authorRepository.save(new Author(authorName)));
     }
 }

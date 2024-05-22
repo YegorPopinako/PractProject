@@ -16,7 +16,7 @@ public class PublishingHouseServiceImpl implements PublishingHouseService {
 
     @Override
     public PublishingHouse findOrCreatePublishingHouse(String publishingHouseName) {
-        Optional<PublishingHouse> publishingHouse = Optional.of(publishingHouseRepository.findByName(publishingHouseName));
+        Optional<PublishingHouse> publishingHouse = Optional.ofNullable(publishingHouseRepository.findByName(publishingHouseName));
         return publishingHouse.orElseGet(() -> publishingHouseRepository.save(new PublishingHouse(publishingHouseName)));
     }
 }

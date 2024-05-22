@@ -16,7 +16,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public Author findOrCreateAuthor(String authorName) {
-        Optional<Author> author = Optional.of(authorRepository.findByName(authorName));
+        Optional<Author> author = Optional.ofNullable(authorRepository.findByName(authorName));
         return author.orElseGet(() -> authorRepository.save(new Author(authorName)));
     }
 }

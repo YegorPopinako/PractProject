@@ -30,8 +30,12 @@ import java.util.Objects;
 @Table(name = "books")
 public class Book {
 
+    @NotBlank
+    @NotNull
     private String authorName;
 
+    @NotBlank
+    @NotNull
     private String publishingHouseName;
 
     @Id
@@ -44,7 +48,6 @@ public class Book {
     private String name;
 
     @Column(nullable = false)
-    @NotNull
     @Enumerated(value = jakarta.persistence.EnumType.STRING)
     private BookCategory bookCategory;
 

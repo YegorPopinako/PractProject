@@ -2,6 +2,9 @@ package ua.petproject.controller;
 
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -12,6 +15,7 @@ import ua.petproject.service.BookService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -26,6 +30,7 @@ class BookControllerIntegrationTest {
 
     @MockBean
     private BookService bookService;
+
 
     @Test
     @SneakyThrows
@@ -51,28 +56,38 @@ class BookControllerIntegrationTest {
         verify(bookService, times(1)).add(book);
     }
 
-    @Test
     @SneakyThrows
-    void testAddInvalidBook(){
+    @ParameterizedTest(name = "{0} {1} {2} {3} {4}")
+    @MethodSource("sourceAddInvalidBook")
+    void testAddInvalidBook(String name, String authorName, String bookCategory, String publishingHouseName, String photoUrl) {
 
         Book book = new Book();
-        book.setName("");
-        book.setPublishingHouseName("Sample Publishing House");
-        book.setAuthorName("Sample Author");
-        book.setBookCategory(BookCategory.FANTASY);
-        book.setPhotoUrl("sample-url.jpg");
+        book.setName(name);
+        book.setPublishingHouseName(publishingHouseName);
+        book.setAuthorName(authorName);
+        book.setBookCategory(BookCategory.valueOf(bookCategory));
+        book.setPhotoUrl(photoUrl);
 
-        when(bookService.add(book)).thenReturn(book);
+        doThrow(new IllegalArgumentException()).when(bookService).add(book);
 
         mvc.perform(post("/api/books/new")
-                        .param("name", "")
-                        .param("authorName", "Sample Author")
-                        .param("bookCategory", "FANTASY")
-                        .param("publishingHouseName", "Sample Publishing House")
-                        .param("photoUrl", "sample-url.jpg"))
+                        .param("name", name)
+                        .param("authorName", authorName)
+                        .param("bookCategory", bookCategory)
+                        .param("publishingHouseName", publishingHouseName)
+                        .param("photoUrl", photoUrl))
                 .andExpect(status().isBadRequest());
 
-        verify(bookService, never()).add(book);
+        verify(bookService,never()).add(book);
+    }
+
+    private static Stream<Arguments> sourceAddInvalidBook() {
+        return Stream.of(
+                Arguments.of("", "authorName", "FANTASY", "publishingHouseName", "photoUrl"),
+                Arguments.of("name", "", "FANTASY", "publishingHouseName", "photoUrl"),
+                Arguments.of("name", "authorName", "FANTASY", "", "photoUrl"),
+                Arguments.of("name", "authorName", "FANTASY", "publishingHouseName", "")
+        );
     }
 
     @Test

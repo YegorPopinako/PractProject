@@ -1,5 +1,6 @@
 package ua.petproject.controller;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,11 +16,12 @@ import ua.petproject.service.BookService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(BookController.class)
@@ -91,10 +93,13 @@ class BookControllerIntegrationTest {
     }
 
     @Test
-    void testGetAllBooks() throws Exception {
+    @SneakyThrows
+    void testGetAllBooks() {
         List<Book> books = new ArrayList<>();
         books.add(new Book("Sample Title", BookCategory.FANTASY, "Sample Author", "Sample Author", "sample-url.jpg"));
         books.add(new Book("Sample Title 2", BookCategory.FANTASY, "Sample Author 2", "Sample Author 2", "sample-url-2.jpg"));
+        books.add(new Book("Sample Title 3", BookCategory.HORROR, "Sample Author 3", "Sample Author 3", "sample-url-3.jpg"));
+        books.add(new Book("Sample Title 4", BookCategory.SCI_FI, "Sample Author 4", "Sample Author 4", "sample-url-4.jpg"));
 
         when(bookService.getAllBooks()).thenReturn(books);
 
@@ -105,5 +110,141 @@ class BookControllerIntegrationTest {
                 .andExpect(model().attribute("books", books));
 
         verify(bookService, times(1)).getAllBooks();
+    }
+
+    @Test
+    @SneakyThrows
+    void testGetEmptyBooks(){
+        List<Book> books = new ArrayList<>();
+        when(bookService.getAllBooks()).thenReturn(books);
+
+        mvc.perform(get("/api/books"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("list"))
+                .andExpect(model().attributeExists("books"))
+                .andExpect(model().attribute("books", books));
+
+        verify(bookService, times(1)).getAllBooks();
+    }
+
+    @Test
+    @SneakyThrows
+    void testGetAllBooksByCategory() {
+        List<Book> books = new ArrayList<>();
+        books.add(new Book("Sample Title", BookCategory.FANTASY, "Sample Author", "Sample Author", "sample-url.jpg"));
+        books.add(new Book("Sample Title 2", BookCategory.FANTASY, "Sample Author 2", "Sample Author 2", "sample-url-2.jpg"));
+        books.add(new Book("Sample Title 3", BookCategory.HORROR, "Sample Author 3", "Sample Author 3", "sample-url-3.jpg"));
+        books.add(new Book("Sample Title 4", BookCategory.SCI_FI, "Sample Author 4", "Sample Author 4", "sample-url-4.jpg"));
+
+        when(bookService.getAll(BookCategory.FANTASY)).thenReturn(books);
+
+        mvc.perform(get("/api/books/fantasy"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("list"))
+                .andExpect(model().attributeExists("books"))
+                .andExpect(model().attribute("books", books));
+
+        verify(bookService, times(1)).getAll(BookCategory.FANTASY);
+    }
+
+    @Test
+    @SneakyThrows
+    void testGetExistingBookById(){
+        Book book = new Book("Sample Title",
+                BookCategory.FANTASY,
+                "Sample Author",
+                "Sample Author",
+                "sample-url.jpg");
+
+        when(bookService.get(1L)).thenReturn(book);
+
+        mvc.perform(get("/api/books/1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("books-details"))
+                .andExpect(model().attributeExists("book"))
+                .andExpect(model().attribute("book", book));
+
+        verify(bookService, times(1)).get(1L);
+    }
+
+    @ParameterizedTest(name = "when book with id = {0} doesn't exist")
+    @MethodSource("sourceInvalidBookId")
+    @SneakyThrows
+    void testGetNonExistingBookById(Long id){
+
+        when(bookService.get(id)).thenThrow(EntityNotFoundException.class);
+
+        mvc.perform(get("/api/books/" + id))
+                .andExpect(status().isNotFound());
+
+        verify(bookService, times(1)).get(id);
+    }
+
+    private static Stream<Arguments> sourceInvalidBookId() {
+        return Stream.of(
+                Arguments.of(2L),
+                Arguments.of(3L),
+                Arguments.of(14L)
+        );
+    }
+
+    @Test
+    @SneakyThrows
+    void testEditBook() {
+        Book book = new Book("Sample Title",
+                BookCategory.FANTASY,
+                "Sample Author",
+                "Sample Author",
+                "sample-url.jpg");
+
+        when(bookService.partialUpdate(1L, Map.of("name2", "Sample Title2"))).thenReturn(book);
+
+        mvc.perform(patch("/api/books/1/edit")
+                        .param("name2", "Sample Title2"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/api/books"));
+
+        verify(bookService, times(1)).partialUpdate(1L, Map.of("name2", "Sample Title2"));
+    }
+
+    @ParameterizedTest(name = "when book with id = {0} doesn't exist")
+    @MethodSource("sourceInvalidBookId")
+    @SneakyThrows
+    void testEditNonExistingBook(Long id){
+
+        when(bookService.partialUpdate(id, Map.of("name2", "Sample Title2"))).thenThrow(new EntityNotFoundException());
+
+        mvc.perform(patch("/api/books/" + id + "/edit")
+                        .param("name2", "Sample Title2"))
+                .andExpect(status().isNotFound());
+
+        verify(bookService, times(1)).partialUpdate(id, Map.of("name2", "Sample Title2"));
+    }
+
+    @ParameterizedTest(name = "when book with id = {0} doesn't exist")
+    @MethodSource("sourceInvalidBookId")
+    @SneakyThrows
+    void testDeleteExistingBook(Long id){
+
+        doNothing().when(bookService).delete(id);
+
+        mvc.perform(delete("/api/books/" + id + "/delete"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/api/books"));
+
+        verify(bookService, times(1)).delete(id);
+    }
+
+    @ParameterizedTest(name = "when book with id = {0} doesn't exist")
+    @MethodSource("sourceInvalidBookId")
+    @SneakyThrows
+    void testDeleteNonExistingBook(Long id){
+
+        doThrow(new EntityNotFoundException()).when(bookService).delete(id);
+
+        mvc.perform(delete("/api/books/" + id + "/delete"))
+                .andExpect(status().isNotFound());
+
+        verify(bookService, times(1)).delete(id);
     }
 }

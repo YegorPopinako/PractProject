@@ -46,18 +46,18 @@ public class BookController {
         return "list";
     }
 
-    @GetMapping("/{id}")
-    public String bookDetails(@PathVariable("id") Long id, Model model) {
-        Book book = bookService.get(id);
-        model.addAttribute("book", book);
-        return "books-details";
-    }
-
     @GetMapping("/fantasy")
     public String getAll(Model model) {
         List<Book> books = bookService.getAll(BookCategory.FANTASY);
         model.addAttribute("books", books);
         return "list";
+    }
+
+    @GetMapping("/{id}")
+    public String bookDetails(@PathVariable("id") Long id, Model model) {
+        Book book = bookService.get(id);
+        model.addAttribute("book", book);
+        return "books-details";
     }
 
     @GetMapping("/{id}/edit")

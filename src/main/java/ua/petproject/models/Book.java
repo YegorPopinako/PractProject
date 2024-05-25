@@ -1,6 +1,5 @@
 package ua.petproject.models;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -30,6 +29,10 @@ import java.util.Objects;
 @Table(name = "books")
 public class Book {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @NotBlank
     @NotNull
     private String authorName;
@@ -37,10 +40,6 @@ public class Book {
     @NotBlank
     @NotNull
     private String publishingHouseName;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @Column(nullable = false)
     @NotNull
@@ -55,7 +54,7 @@ public class Book {
     @JoinColumn(name = "publishing_house_id")
     private PublishingHouse publishingHouse;
 
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @ManyToOne
     @JoinColumn(name = "author_id")
     private Author author;
 

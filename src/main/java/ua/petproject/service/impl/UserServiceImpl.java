@@ -1,6 +1,6 @@
 package ua.petproject.service.impl;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ua.petproject.models.Role;
 import ua.petproject.models.User;
@@ -11,7 +11,7 @@ import ua.petproject.service.UserService;
 import java.util.Arrays;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;

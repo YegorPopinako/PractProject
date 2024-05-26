@@ -19,8 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -32,7 +33,6 @@ class BookControllerIntegrationTest {
 
     @MockBean
     private BookService bookService;
-
 
     @Test
     @SneakyThrows
@@ -51,7 +51,9 @@ class BookControllerIntegrationTest {
                         .param("authorName", "Sample Author")
                         .param("bookCategory", "FANTASY")
                         .param("publishingHouseName", "Sample Publishing House")
-                        .param("photoUrl", "sample-url.jpg"))
+                        .param("photoUrl", "sample-url.jpg")
+                        .with(csrf())
+                        .with(user("test").password("test").roles("USER")))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/api/books"));
 
@@ -77,7 +79,8 @@ class BookControllerIntegrationTest {
                         .param("authorName", authorName)
                         .param("bookCategory", bookCategory)
                         .param("publishingHouseName", publishingHouseName)
-                        .param("photoUrl", photoUrl))
+                        .param("photoUrl", photoUrl).with(csrf())
+                        .with(user("test").password("test").roles("USER")))
                 .andExpect(status().isBadRequest());
 
         verify(bookService,never()).add(book);
@@ -103,7 +106,9 @@ class BookControllerIntegrationTest {
 
         when(bookService.getAllBooks()).thenReturn(books);
 
-        mvc.perform(get("/api/books"))
+        mvc.perform(get("/api/books")
+                .with(csrf())
+                .with(user("test").password("test").roles("USER")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("list"))
                 .andExpect(model().attributeExists("books"))
@@ -118,7 +123,9 @@ class BookControllerIntegrationTest {
         List<Book> books = new ArrayList<>();
         when(bookService.getAllBooks()).thenReturn(books);
 
-        mvc.perform(get("/api/books"))
+        mvc.perform(get("/api/books")
+                .with(csrf())
+                .with(user("test").password("test").roles("USER")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("list"))
                 .andExpect(model().attributeExists("books"))
@@ -138,7 +145,9 @@ class BookControllerIntegrationTest {
 
         when(bookService.getAll(BookCategory.FANTASY)).thenReturn(books);
 
-        mvc.perform(get("/api/books/fantasy"))
+        mvc.perform(get("/api/books/fantasy")
+                .with(csrf())
+                .with(user("test").password("test").roles("USER")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("list"))
                 .andExpect(model().attributeExists("books"))
@@ -158,7 +167,9 @@ class BookControllerIntegrationTest {
 
         when(bookService.get(1L)).thenReturn(book);
 
-        mvc.perform(get("/api/books/1"))
+        mvc.perform(get("/api/books/1")
+                .with(csrf())
+                .with(user("test").password("test").roles("USER")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("books-details"))
                 .andExpect(model().attributeExists("book"))
@@ -174,7 +185,9 @@ class BookControllerIntegrationTest {
 
         when(bookService.get(id)).thenThrow(EntityNotFoundException.class);
 
-        mvc.perform(get("/api/books/" + id))
+        mvc.perform(get("/api/books/" + id)
+                .with(csrf())
+                .with(user("test").password("test").roles("USER")))
                 .andExpect(status().isNotFound());
 
         verify(bookService, times(1)).get(id);
@@ -197,28 +210,36 @@ class BookControllerIntegrationTest {
                 "Sample Author",
                 "sample-url.jpg");
 
-        when(bookService.partialUpdate(1L, Map.of("name2", "Sample Title2"))).thenReturn(book);
+        when(bookService.partialUpdate(anyLong(), argThat(map ->
+                "Sample Title2".equals(map.get("name")) && map.size() == 2))).thenReturn(book);
 
         mvc.perform(patch("/api/books/1/edit")
-                        .param("name2", "Sample Title2"))
+                        .param("name", "Sample Title2")
+                        .with(csrf())
+                        .with(user("test").password("test").roles("USER")))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/api/books"));
 
-        verify(bookService, times(1)).partialUpdate(1L, Map.of("name2", "Sample Title2"));
+        verify(bookService, times(1)).partialUpdate(eq(1L), argThat(map ->
+                "Sample Title2".equals(map.get("name")) && map.size() == 2));
     }
 
     @ParameterizedTest(name = "when book with id = {0} doesn't exist")
     @MethodSource("sourceInvalidBookId")
     @SneakyThrows
-    void testEditNonExistingBook(Long id){
+    void testEditNonExistingBook(Long id) {
 
-        when(bookService.partialUpdate(id, Map.of("name2", "Sample Title2"))).thenThrow(new EntityNotFoundException());
+        when(bookService.partialUpdate(anyLong(), argThat(map -> "Sample Title2".equals(map.get("name")) && map.size() == 2)))
+                .thenThrow(new EntityNotFoundException());
 
         mvc.perform(patch("/api/books/" + id + "/edit")
-                        .param("name2", "Sample Title2"))
+                        .param("name", "Sample Title2")
+                        .with(csrf())
+                        .with(user("test").password("test").roles("USER")))
                 .andExpect(status().isNotFound());
 
-        verify(bookService, times(1)).partialUpdate(id, Map.of("name2", "Sample Title2"));
+        verify(bookService, times(1)).partialUpdate(eq(id), argThat(map ->
+                "Sample Title2".equals(map.get("name")) && map.size() == 2));
     }
 
     @ParameterizedTest(name = "when book with id = {0} doesn't exist")
@@ -228,7 +249,9 @@ class BookControllerIntegrationTest {
 
         doNothing().when(bookService).delete(id);
 
-        mvc.perform(delete("/api/books/" + id + "/delete"))
+        mvc.perform(delete("/api/books/" + id + "/delete")
+                .with(csrf())
+                .with(user("test").password("test").roles("USER")))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/api/books"));
 
@@ -242,7 +265,9 @@ class BookControllerIntegrationTest {
 
         doThrow(new EntityNotFoundException()).when(bookService).delete(id);
 
-        mvc.perform(delete("/api/books/" + id + "/delete"))
+        mvc.perform(delete("/api/books/" + id + "/delete")
+                .with(csrf())
+                .with(user("test").password("test").roles("USER")))
                 .andExpect(status().isNotFound());
 
         verify(bookService, times(1)).delete(id);

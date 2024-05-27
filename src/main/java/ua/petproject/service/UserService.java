@@ -1,11 +1,11 @@
 package ua.petproject.service;
 
-import ua.petproject.models.User;
+import ua.petproject.models.UserEntity;
 
 public interface UserService {
-    void saveUser(User user);
+    void saveUser(UserEntity userEntity);
 
-    User findByEmail(String email);
+    UserEntity findByEmail(String email);
 
-    User findByUsername(String username);
+    UserEntity findByUsername(String username);
 }

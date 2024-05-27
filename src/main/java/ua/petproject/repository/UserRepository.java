@@ -1,12 +1,13 @@
 package ua.petproject.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ua.petproject.models.User;
+import ua.petproject.models.UserEntity;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
-    User findByEmail(String email);
+    UserEntity findByEmail(String email);
 
-    User findByUsername(String username);
+    UserEntity findByUsername(String username);
 
+    UserEntity findFirstByUsername(String username);
 }

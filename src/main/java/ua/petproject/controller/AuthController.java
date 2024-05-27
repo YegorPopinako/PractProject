@@ -8,7 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import ua.petproject.models.User;
+import ua.petproject.models.UserEntity;
 import ua.petproject.service.UserService;
 
 @Controller
@@ -24,26 +24,26 @@ public class AuthController {
 
     @GetMapping("/register")
     public String getRegisterForm(Model model) {
-        User user = new User();
-        model.addAttribute("user", user);
+        UserEntity userEntity = new UserEntity();
+        model.addAttribute("userEntity", userEntity);
         return "register";
     }
 
     @PostMapping("/register/save")
-    public String register(@ModelAttribute("user") @Valid User user, BindingResult result, Model model) {
-        User existingUserEmail = userService.findByEmail(user.getEmail());
-        if(existingUserEmail != null && existingUserEmail.getEmail() != null && !existingUserEmail.getEmail().isEmpty()) {
+    public String register(@ModelAttribute("userEntity") @Valid UserEntity userEntity, BindingResult result, Model model) {
+        UserEntity existingUserEmailEntity = userService.findByEmail(userEntity.getEmail());
+        if(existingUserEmailEntity != null && existingUserEmailEntity.getEmail() != null && !existingUserEmailEntity.getEmail().isEmpty()) {
             return "redirect:/register?fail";
         }
-        User existingUserUsername = userService.findByUsername(user.getUsername());
-        if(existingUserUsername != null && existingUserUsername.getUsername() != null && !existingUserUsername.getUsername().isEmpty()) {
+        UserEntity existingUserUsernameEntity = userService.findByUsername(userEntity.getUsername());
+        if(existingUserUsernameEntity != null && existingUserUsernameEntity.getUsername() != null && !existingUserUsernameEntity.getUsername().isEmpty()) {
             return "redirect:/register?fail";
         }
         if (result.hasErrors()) {
-            model.addAttribute("user", user);
+            model.addAttribute("userEntity", userEntity);
             return "register";
         }
-        userService.saveUser(user);
+        userService.saveUser(userEntity);
         return "redirect:/api/books?success";
     }
 }

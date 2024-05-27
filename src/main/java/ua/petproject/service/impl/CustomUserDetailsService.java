@@ -1,4 +1,4 @@
-package ua.petproject.service;
+package ua.petproject.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

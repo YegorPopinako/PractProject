@@ -11,7 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import ua.petproject.service.CustomUserDetailsService;
+import ua.petproject.service.impl.CustomUserDetailsService;
 
 @Configuration
 @EnableWebSecurity

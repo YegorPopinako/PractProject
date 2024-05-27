@@ -63,6 +63,10 @@ public class Book {
     @Column(name = "photourl")
     private String photoUrl;
 
+    @ManyToOne
+    @JoinColumn(name = "created_by", nullable = false)
+    private UserEntity user;
+
     public Book(String name, BookCategory bookCategory, String authorName, String publishingHouseName, String photoUrl) {
         this.name = name;
         this.bookCategory = bookCategory;

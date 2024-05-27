@@ -7,11 +7,14 @@ import org.springframework.transaction.annotation.Transactional;
 import ua.petproject.models.Author;
 import ua.petproject.models.Book;
 import ua.petproject.models.PublishingHouse;
+import ua.petproject.models.UserEntity;
 import ua.petproject.models.enums.BookCategory;
 import ua.petproject.repository.BookRepository;
+import ua.petproject.repository.UserRepository;
 import ua.petproject.service.AuthorService;
 import ua.petproject.service.BookService;
 import ua.petproject.service.PublishingHouseService;
+import ua.petproject.utils.SecurityUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -25,15 +28,20 @@ public class BookServiceImpl implements BookService {
 
     private final AuthorService authorService;
 
+    private final UserRepository userRepository;
+
     private final PublishingHouseService publishingHouseService;
 
     @Override
     @Transactional
     public Book add(Book book) {
+        String username = SecurityUtil.getSessionUser();
+        UserEntity user = userRepository.findByUsername(username);
         Author author = authorService.findOrCreateAuthor(book.getAuthorName());
         PublishingHouse publishingHouse = publishingHouseService.findOrCreatePublishingHouse(book.getPublishingHouseName());
         book.setAuthor(author);
         book.setPublishingHouse(publishingHouse);
+        book.setUser(user);
         return bookRepository.save(book);
     }
 
@@ -85,6 +93,9 @@ public class BookServiceImpl implements BookService {
                         break;
                 }
             });
+            String username = SecurityUtil.getSessionUser();
+            UserEntity user = userRepository.findByUsername(username);
+            existingBook.setUser(user);
             return existingBook;
         } catch (EntityNotFoundException ex) {
             throw new EntityNotFoundException("Book with ID " + id + " not found.");

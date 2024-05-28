@@ -1,7 +1,7 @@
-<html
-        xmlns:th="http://www.thymeleaf.org"
-        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-        layout:decorate="~{layout}">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
 <head>
     <title>Book Create</title>
 </head>
@@ -10,57 +10,41 @@
     <section layout:fragment="body" class="py-5">
         <div class="container">
             <form role="form" method="post" th:action="@{/api/books/new}" th:object="${book}">
-            <div class="form-row">
-                    <div class="form-group col-md6">
+                <div class="form-row">
+                    <!-- Display global error message -->
+                    <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+                    <div class="form-group col-md-6">
                         <label for="name">Book name</label>
-                        <input
-                                type="text"
-                                class="form-control"
-                                id="name"
-                                name="name"
-                                th:field="*{name}"
-                                placeholder="Book name">
+                        <input type="text" class="form-control" id="name" name="name" th:field="*{name}" placeholder="Book name">
+                        <!-- Display field-specific error message -->
+                        <div th:if="${#fields.hasErrors('name')}" class="text-danger" th:errors="*{name}"></div>
                     </div>
-                <div class="form-group col-md-6">
-                    <label for="category">Category</label>
-                    <select class="form-control" id="category" name="category" th:field="*{bookCategory}">
-                        <option value="HORROR">Horror</option>
-                        <option value="FANTASY">Fantasy</option>
-                        <option value="SCI_FI">Sci-Fi</option>
-                    </select>
-                </div>
-                <div class="form-group col-md6">
+                    <div class="form-group col-md-6">
+                        <label for="category">Category</label>
+                        <select class="form-control" id="category" name="category" th:field="*{bookCategory}">
+                            <option value="HORROR">Horror</option>
+                            <option value="FANTASY">Fantasy</option>
+                            <option value="SCI_FI">Sci-Fi</option>
+                        </select>
+                        <div th:if="${#fields.hasErrors('bookCategory')}" class="text-danger" th:errors="*{bookCategory}"></div>
+                    </div>
+                    <div class="form-group col-md-6">
                         <label for="author">Author</label>
-                        <input
-                                type="text"
-                                class="form-control"
-                                id="author"
-                                name="author"
-                                th:field="*{authorName}"
-                                placeholder="Author initials">
+                        <input type="text" class="form-control" id="author" name="author" th:field="*{authorName}" placeholder="Author initials">
+                        <div th:if="${#fields.hasErrors('authorName')}" class="text-danger" th:errors="*{authorName}"></div>
                     </div>
-                    <div class="form-group col-md6">
+                    <div class="form-group col-md-6">
                         <label for="publishingHouse">Publisher</label>
-                        <input
-                                type="text"
-                                class="form-control"
-                                id="publishingHouse"
-                                name="publishingHouse"
-                                th:field="*{publishingHouseName}"
-                                placeholder="Publishing house">
+                        <input type="text" class="form-control" id="publishingHouse" name="publishingHouse" th:field="*{publishingHouseName}" placeholder="Publishing house">
+                        <div th:if="${#fields.hasErrors('publishingHouseName')}" class="text-danger" th:errors="*{publishingHouseName}"></div>
                     </div>
-                    <div class="form-group col-md6 mb-3">
+                    <div class="form-group col-md-6 mb-3">
                         <label for="photoUrl">PhotoUrl</label>
-                        <input
-                                type="text"
-                                class="form-control"
-                                id="photoUrl"
-                                name="photoUrl"
-                                th:field="*{photoUrl}"
-                                placeholder="Photo Url">
+                        <input type="text" class="form-control" id="photoUrl" name="photoUrl" th:field="*{photoUrl}" placeholder="Photo Url">
+                        <div th:if="${#fields.hasErrors('photoUrl')}" class="text-danger" th:errors="*{photoUrl}"></div>
                     </div>
+                </div>
                 <button type="submit" class="btn btn-primary">Create</button>
-            </div>
             </form>
         </div>
     </section>

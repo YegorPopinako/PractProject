@@ -18,6 +18,7 @@ import ua.petproject.utils.SecurityUtil;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -35,6 +36,10 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public Book add(Book book) {
+        Optional<Book> existingBook = bookRepository.findByName(book.getName());
+        if (existingBook.isPresent()) {
+            throw new RuntimeException("A book with the same name already exists.");
+        }
         String username = SecurityUtil.getSessionUser();
         UserEntity user = userRepository.findByUsername(username);
         Author author = authorService.findOrCreateAuthor(book.getAuthorName());

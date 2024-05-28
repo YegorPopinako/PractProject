@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -39,8 +40,16 @@ public class BookController {
     }
 
     @PostMapping("/new")
-    public String add(@ModelAttribute("book") @Valid Book book) {
-        bookService.add(book);
+    public String add(@ModelAttribute("book") @Valid Book book, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            return "books-create";
+        }
+        try {
+            bookService.add(book);
+        } catch (RuntimeException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "books-create";
+        }
         return "redirect:/api/books";
     }
 
@@ -54,13 +63,6 @@ public class BookController {
             model.addAttribute("user", user);
         }
         model.addAttribute("user", user);
-        model.addAttribute("books", books);
-        return "list";
-    }
-
-    @GetMapping("/fantasy")
-    public String getAll(Model model) {
-        List<Book> books = bookService.getAll(BookCategory.FANTASY);
         model.addAttribute("books", books);
         return "list";
     }

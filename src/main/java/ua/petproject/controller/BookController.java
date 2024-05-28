@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ua.petproject.models.Book;
+import ua.petproject.models.UserEntity;
 import ua.petproject.models.enums.BookCategory;
 import ua.petproject.service.BookService;
+import ua.petproject.service.UserService;
+import ua.petproject.utils.SecurityUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -25,6 +28,8 @@ import java.util.Map;
 public class BookController {
 
     private final BookService bookService;
+
+    private final UserService userService;
 
     @GetMapping("/new")
     public String createBookForm(Model model) {
@@ -41,7 +46,14 @@ public class BookController {
 
     @GetMapping
     public String getAllBooks(Model model) {
+        UserEntity user = new UserEntity();
         List<Book> books = bookService.getAllBooks();
+        String username = SecurityUtil.getSessionUser();
+        if(username != null) {
+            user = userService.findByUsername(username);
+            model.addAttribute("user", user);
+        }
+        model.addAttribute("user", user);
         model.addAttribute("books", books);
         return "list";
     }
@@ -55,7 +67,14 @@ public class BookController {
 
     @GetMapping("/{id}")
     public String bookDetails(@PathVariable("id") Long id, Model model) {
+        UserEntity user = new UserEntity();
         Book book = bookService.get(id);
+        String username = SecurityUtil.getSessionUser();
+        if(username != null) {
+            user = userService.findByUsername(username);
+            model.addAttribute("user", user);
+        }
+        model.addAttribute("user", user);
         model.addAttribute("book", book);
         return "books-details";
     }

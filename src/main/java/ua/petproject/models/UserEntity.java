@@ -10,6 +10,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,8 +32,16 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
+    @NotNull
     private String username;
+
+    @NotBlank
+    @NotNull
     private String email;
+
+    @NotBlank
+    @NotNull
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -41,4 +51,8 @@ public class UserEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
     )
     private List<Role> roles = new ArrayList<>();
+
+    public boolean hasRole(String roleName) {
+        return roles.stream().anyMatch(role -> role.getName().equals(roleName));
+    }
 }

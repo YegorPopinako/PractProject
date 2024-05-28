@@ -27,7 +27,9 @@
                             </div>
                         </div>
                     </a>
-                    <a class="btn btn-primary" th:href="@{'/api/books/' + ${book.id} + '/edit'}">Edit</a>
+                    <div th:if="${user.id} == ${book.user.id} or ${user.hasRole('ADMIN')}">
+                        <a class="btn btn-primary" th:href="@{'/api/books/' + ${book.id} + '/edit'}">Edit</a>
+                    </div>
                 </div>
             </div>
         </div>

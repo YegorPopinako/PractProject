@@ -17,7 +17,6 @@ import ua.petproject.service.impl.CustomUserDetailsService;
 @EnableWebSecurity
 @AllArgsConstructor
 public class SecurityConfig {
-    private CustomUserDetailsService customUserDetailsService;
 
     @Bean
     public static PasswordEncoder passwordEncoder() {
@@ -43,9 +42,5 @@ public class SecurityConfig {
                                 .permitAll()
                 );
         return http.build();
-    }
-
-    public void configure(AuthenticationManagerBuilder builder) throws Exception {
-        builder.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
     }
 }

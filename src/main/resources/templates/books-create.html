@@ -9,7 +9,7 @@
 <main class="flex-shrink-0">
     <section layout:fragment="body" class="py-5">
         <div class="container">
-            <form role="form" method="post" th:action="@{/api/books/new}" th:object="${book}">
+            <form role="form" method="post" th:action="@{/books/new}" th:object="${book}">
                 <div class="form-row">
                     <!-- Display global error message -->
                     <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>

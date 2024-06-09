@@ -44,7 +44,6 @@ public interface BookService {
      * @param updates The new data for the book.
      * @return Updated book.
      */
-    /*Book update(Long id, @Valid Book book);*/
     Book partialUpdate(Long id, Map<String, String> updates);
 
     /**

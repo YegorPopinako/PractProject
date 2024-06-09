@@ -7,7 +7,7 @@
 <main class="flex-shrink-0">
     <section layout:fragment="body" class="py-5">
         <div class="container">
-            <form role="form" method="post" th:action="@{/api/books/{bookId}/edit(bookId=${book.id})}" th:object="${book}" enctype="application/x-www-form-urlencoded">
+            <form role="form" method="post" th:action="@{/books/{bookId}/edit(bookId=${book.id})}" th:object="${book}" enctype="application/x-www-form-urlencoded">
                 <input type="hidden" name="_method" th:value="'PATCH'">
                 <div class="form-row">
                     <div class="form-group col-md-6">

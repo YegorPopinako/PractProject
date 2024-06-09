@@ -44,6 +44,6 @@ public class AuthController {
             return "register";
         }
         userService.saveUser(userEntity);
-        return "redirect:/api/books?success";
+        return "redirect:/books?success";
     }
 }

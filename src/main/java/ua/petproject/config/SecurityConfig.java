@@ -28,12 +28,12 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests(authorize -> authorize
-                        .requestMatchers("/login", "/register", "/api/books", "/css/**", "/js/**")
+                        .requestMatchers("/login", "/register", "/books", "/css/**", "/js/**")
                         .permitAll()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/api/books")
+                        .defaultSuccessUrl("/books")
                         .loginProcessingUrl("/login")
                         .failureUrl("/login?error=true")
                         .permitAll()

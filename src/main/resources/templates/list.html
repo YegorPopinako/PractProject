@@ -18,7 +18,7 @@
             </div>
             <div class="row gx-5">
                 <div th:each="book : ${books}" class="col-lg-6 mb-2">
-                    <a th:href="@{'/api/books/' + ${book.id}}" class="text-decoration-none link-dark">
+                    <a th:href="@{'/books/' + ${book.id}}" class="text-decoration-none link-dark">
                         <div>
                             <img class="card-img-top img-fluid" th:src="${book.photoUrl}" alt="..."
                                  style="max-width: 300px; max-height: 500px; object-fit: cover;">
@@ -28,7 +28,7 @@
                         </div>
                     </a>
                     <div th:if="${user.id} == ${book.user.id} or ${user.hasRole('ADMIN')}">
-                        <a class="btn btn-primary" th:href="@{'/api/books/' + ${book.id} + '/edit'}">Edit</a>
+                        <a class="btn btn-primary" th:href="@{'/books/' + ${book.id} + '/edit'}">Edit</a>
                     </div>
                 </div>
             </div>

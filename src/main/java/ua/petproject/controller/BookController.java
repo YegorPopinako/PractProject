@@ -25,7 +25,7 @@ import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/api/books")
+@RequestMapping("/books")
 public class BookController {
 
     private final BookService bookService;
@@ -50,7 +50,7 @@ public class BookController {
             model.addAttribute("errorMessage", e.getMessage());
             return "books-create";
         }
-        return "redirect:/api/books";
+        return "redirect:/books";
     }
 
     @GetMapping
@@ -91,12 +91,12 @@ public class BookController {
     @PatchMapping("/{id}/edit")
     public String partialUpdateBook(@PathVariable("id") Long id, @RequestParam Map<String, String> updates) {
         bookService.partialUpdate(id, updates);
-        return "redirect:/api/books";
+        return "redirect:/books";
     }
 
     @DeleteMapping("/{id}/delete")
     public String deleteBook(@PathVariable("id") Long id) {
         bookService.delete(id);
-        return "redirect:/api/books";
+        return "redirect:/books";
     }
 }

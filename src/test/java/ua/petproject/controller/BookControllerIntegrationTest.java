@@ -9,15 +9,21 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ua.petproject.models.Book;
+import ua.petproject.models.UserEntity;
 import ua.petproject.models.enums.BookCategory;
 import ua.petproject.service.BookService;
+import ua.petproject.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -32,6 +38,40 @@ class BookControllerIntegrationTest {
 
     @MockBean
     private BookService bookService;
+
+    @MockBean
+    private UserService userService;
+
+    @Test
+    @WithMockUser(username = "testuser")
+    @SneakyThrows
+    void testGetExistingBookById() {
+        UserEntity user = new UserEntity();
+        user.setUsername("testuser");
+
+        Long bookId = 1L;
+
+        Book book = new Book();
+        book.setId(bookId);
+        book.setName("Test Book");
+        book.setAuthorName("Test Author");
+        book.setBookCategory(BookCategory.HORROR);
+        book.setPublishingHouseName("Test Publishing House");
+        book.setPhotoUrl("test_photo_url");
+        book.setUser(user);
+
+        when(bookService.get(bookId)).thenReturn(book);
+        when(userService.findByUsername("testuser")).thenReturn(new UserEntity());
+
+        mvc.perform(get("/books/{id}", bookId))
+                .andExpect(status().isOk())
+                .andExpect(view().name("books-details"))
+                .andExpect(model().attributeExists("book", "user"));
+
+        verify(bookService, times(1)).get(bookId);
+        verify(userService, times(1)).findByUsername("testuser");
+    }
+
 
     @Test
     @SneakyThrows
@@ -153,28 +193,6 @@ class BookControllerIntegrationTest {
                 .andExpect(model().attribute("books", books));
 
         verify(bookService, times(1)).getAll(BookCategory.FANTASY);
-    }
-
-    @Test
-    @SneakyThrows
-    void testGetExistingBookById(){
-        Book book = new Book("Sample Title",
-                BookCategory.FANTASY,
-                "Sample Author",
-                "Sample Author",
-                "sample-url.jpg");
-
-        when(bookService.get(1L)).thenReturn(book);
-
-        mvc.perform(get("/api/books/1")
-                .with(csrf())
-                .with(user("test").password("test").roles("USER")))
-                .andExpect(status().isOk())
-                .andExpect(view().name("books-details"))
-                .andExpect(model().attributeExists("book"))
-                .andExpect(model().attribute("book", book));
-
-        verify(bookService, times(1)).get(1L);
     }
 
     @ParameterizedTest(name = "when book with id = {0} doesn't exist")

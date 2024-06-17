@@ -4,13 +4,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ua.petproject.models.Role;
 import ua.petproject.models.UserEntity;
-import ua.petproject.repository.RoleRepository;
+import ua.petproject.models.enums.Roles;
 import ua.petproject.repository.UserRepository;
 import ua.petproject.service.UserService;
-
-import java.util.Arrays;
 
 @Service
 @AllArgsConstructor
@@ -19,16 +16,17 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    private final RoleRepository roleRepository;
-
     private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     public void saveUser(UserEntity userEntity) {
-        Role role = roleRepository.findByName("USER");
+        UserEntity existingUser = userRepository.findByUsername(userEntity.getUsername());
+        if (existingUser != null) {
+            throw new RuntimeException("User already exists!");
+        }
         userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
-        userEntity.setRoles(Arrays.asList(role));
+        userEntity.setRole(Roles.USER);
         userRepository.save(userEntity);
     }
 
@@ -42,3 +40,4 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByUsername(username);
     }
 }
+

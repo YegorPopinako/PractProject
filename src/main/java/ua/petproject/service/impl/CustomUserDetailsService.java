@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import ua.petproject.models.UserEntity;
 import ua.petproject.repository.UserRepository;
 
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,12 +22,11 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity user = userRepository.findFirstByUsername(username);
         if (user != null) {
-            return new User(
-                    user.getEmail(),
-                    user.getPassword(),
-                    user.getRoles().stream().map((role) -> new SimpleGrantedAuthority(role.getName()))
-                            .collect(Collectors.toList())
-            );
+            return User.builder()
+                    .username(user.getEmail())
+                    .password(user.getPassword())
+                    .authorities(Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name())))
+                    .build();
         } else {
             throw new UsernameNotFoundException("Invalid username or password.");
         }

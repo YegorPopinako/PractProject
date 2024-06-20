@@ -2,6 +2,7 @@ package ua.petproject.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -82,6 +83,7 @@ public class BookController {
     }
 
     @GetMapping("/{id}/edit")
+    @PreAuthorize("@bookServiceImpl.isUserCreator(#id) or hasAuthority('ADMIN')")
     public String editBookForm(@PathVariable("id") Long id, Model model) {
         Book book = bookService.get(id);
         model.addAttribute("book", book);
@@ -89,12 +91,14 @@ public class BookController {
     }
 
     @PatchMapping("/{id}/edit")
+    @PreAuthorize("@bookServiceImpl.isUserCreator(#id) or hasAuthority('ADMIN')")
     public String partialUpdateBook(@PathVariable("id") Long id, @RequestParam Map<String, String> updates) {
         bookService.partialUpdate(id, updates);
         return "redirect:/books";
     }
 
     @DeleteMapping("/{id}/delete")
+    @PreAuthorize("@bookServiceImpl.isUserCreator(#id) or hasAuthority('ADMIN')")
     public String deleteBook(@PathVariable("id") Long id) {
         bookService.delete(id);
         return "redirect:/books";

@@ -30,14 +30,6 @@ public interface BookService {
     Book get(Long id) throws EntityNotFoundException;
 
     /**
-     * Retrieves all books by category.
-     *
-     * @param bookCategory The category by which to filter the books.
-     * @return The list of retrieved books.
-     */
-    List<Book> getAll(BookCategory bookCategory);
-
-    /**
      * Updates an existing book.
      *
      * @param id   The ID of the book to be updated.
@@ -61,4 +53,11 @@ public interface BookService {
      */
     void delete(Long id) throws EntityNotFoundException;
 
+
+    /**
+     * Checks is user is a creator of book
+     * @param id of the book
+     * @return true if book contains current user
+     */
+    boolean isUserCreator(Long id);
 }

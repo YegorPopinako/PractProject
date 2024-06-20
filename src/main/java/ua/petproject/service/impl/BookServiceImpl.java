@@ -56,11 +56,6 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Book> getAll(BookCategory bookCategory) {
-        return bookRepository.findByBookCategory(bookCategory);
-    }
-
-    @Override
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
     }
@@ -98,12 +93,18 @@ public class BookServiceImpl implements BookService {
                         break;
                 }
             });
-            String username = SecurityUtil.getSessionUser();
-            UserEntity user = userRepository.findByUsername(username);
-            existingBook.setUser(user);
             return existingBook;
         } catch (EntityNotFoundException ex) {
             throw new EntityNotFoundException("Book with ID " + id + " not found.");
         }
+    }
+
+    @Override
+    public boolean isUserCreator(Long id) {
+        String username = SecurityUtil.getSessionUser();
+        UserEntity currentUser = userRepository.findByUsername(username);
+        Optional<Book> book = bookRepository.findById(id);
+
+        return book.isPresent() && book.get().getUser().equals(currentUser);
     }
 }

@@ -7,15 +7,19 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import ua.petproject.config.SecurityConfig;
 import ua.petproject.models.Book;
 import ua.petproject.models.UserEntity;
 import ua.petproject.models.enums.BookCategory;
 import ua.petproject.service.BookService;
 import ua.petproject.service.UserService;
+import ua.petproject.service.impl.BookServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,24 +27,25 @@ import java.util.stream.Stream;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(BookController.class)
+@Import(SecurityConfig.class)
 class BookControllerIntegrationTest {
 
     @Autowired
     private MockMvc mvc;
 
     @MockBean
+    @Qualifier("bookServiceImpl")
     private BookService bookService;
 
     @MockBean
     private UserService userService;
 
     @Test
-    @WithMockUser(username = "testuser")
+    @WithMockUser(username = "testuser", authorities = "USER")
     @SneakyThrows
     void testGetExistingBookById() {
         UserEntity user = new UserEntity();
@@ -65,12 +70,35 @@ class BookControllerIntegrationTest {
                 .andExpect(view().name("books-details"))
                 .andExpect(model().attributeExists("book", "user"));
 
-        verify(bookService, times(1)).get(bookId);
-        verify(userService, times(1)).findByUsername("testuser");
+        verify(bookService).get(bookId);
+        verify(userService).findByUsername("testuser");
     }
 
     @Test
-    @WithMockUser(username = "testuser")
+    @WithMockUser(username = "testuser", authorities = "USER")
+    void testEditBook() throws Exception {
+        Book book = new Book("Sample Title",
+                BookCategory.FANTASY,
+                "Sample Author",
+                "Sample Author",
+                "sample-url.jpg");
+
+        when(bookService.isUserCreator(1L)).thenReturn(true);
+        when(bookService.partialUpdate(anyLong(), argThat(map ->
+                "Sample Title2".equals(map.get("name")) && map.size() == 2))).thenReturn(book);
+
+        mvc.perform(patch("/books/1/edit")
+                        .with(csrf())
+                        .param("name", "Sample Title2"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/books"));
+
+        verify(bookService).partialUpdate(eq(1L), argThat(map ->
+                "Sample Title2".equals(map.get("name")) && map.size() == 2));
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", authorities = "USER")
     @SneakyThrows
     void testAddBook() {
         Book book = new Book();
@@ -88,18 +116,17 @@ class BookControllerIntegrationTest {
                         .param("bookCategory", "FANTASY")
                         .param("publishingHouseName", "Sample Publishing House")
                         .param("photoUrl", "sample-url.jpg")
-                        .with(csrf())
-                        .with(user("testuser")))
+                        .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/books"));
 
-        verify(bookService, times(1)).add(book);
+        verify(bookService).add(book);
     }
 
-    @SneakyThrows
     @ParameterizedTest(name = "{0} {1} {2} {3} {4}")
     @MethodSource("sourceAddInvalidBook")
-    @WithMockUser(username = "testuser")
+    @WithMockUser(username = "testuser", authorities = "USER")
+    @SneakyThrows
     void testAddInvalidBook(String name, String authorName, String bookCategory, String publishingHouseName, String photoUrl) {
 
         Book book = new Book();
@@ -117,8 +144,7 @@ class BookControllerIntegrationTest {
                         .param("bookCategory", bookCategory)
                         .param("publishingHouseName", publishingHouseName)
                         .param("photoUrl", photoUrl)
-                        .with(csrf())
-                        .with(user("testuser").roles("USER")))
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("books-create"))
                 .andExpect(model().attributeExists("book"));
@@ -136,7 +162,7 @@ class BookControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "testuser")
+    @WithMockUser(username = "testuser", authorities = "USER")
     @SneakyThrows
     void testGetAllBooks() {
         UserEntity user = new UserEntity();
@@ -164,12 +190,12 @@ class BookControllerIntegrationTest {
                 .andExpect(model().attributeExists("user"))
                 .andExpect(model().attribute("user", user));
 
-        verify(bookService, times(1)).getAllBooks();
-        verify(userService, times(1)).findByUsername("testuser");
+        verify(bookService).getAllBooks();
+        verify(userService).findByUsername("testuser");
     }
 
     @Test
-    @WithMockUser(username = "testuser")
+    @WithMockUser(username = "testuser", authorities = "USER")
     @SneakyThrows
     void testGetEmptyBooks() {
         List<Book> books = new ArrayList<>();
@@ -184,9 +210,9 @@ class BookControllerIntegrationTest {
         verify(bookService, times(1)).getAllBooks();
     }
 
-    @WithMockUser(username = "test")
     @ParameterizedTest(name = "when book with id = {0} doesn't exist")
     @MethodSource("sourceInvalidBookId")
+    @WithMockUser(username = "testuser", authorities = "USER")
     @SneakyThrows
     void testGetNonExistingBookById(Long id){
 
@@ -195,7 +221,7 @@ class BookControllerIntegrationTest {
         mvc.perform(get("/books/" + id))
                 .andExpect(status().isNotFound());
 
-        verify(bookService, times(1)).get(id);
+        verify(bookService).get(id);
     }
 
     private static Stream<Arguments> sourceInvalidBookId() {
@@ -206,32 +232,9 @@ class BookControllerIntegrationTest {
         );
     }
 
-    @Test
-    @WithMockUser(username = "test")
-    @SneakyThrows
-    void testEditBook() {
-        Book book = new Book("Sample Title",
-                BookCategory.FANTASY,
-                "Sample Author",
-                "Sample Author",
-                "sample-url.jpg");
-
-        when(bookService.partialUpdate(anyLong(), argThat(map ->
-                "Sample Title2".equals(map.get("name")) && map.size() == 2))).thenReturn(book);
-
-        mvc.perform(patch("/books/1/edit")
-                        .with(csrf())
-                        .param("name", "Sample Title2"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/books"));
-
-        verify(bookService, times(1)).partialUpdate(eq(1L), argThat(map ->
-                "Sample Title2".equals(map.get("name")) && map.size() == 2));
-    }
-
-    @WithMockUser(username = "test")
     @ParameterizedTest(name = "when book with id = {0} doesn't exist")
     @MethodSource("sourceInvalidBookId")
+    @WithMockUser(username = "testuser", authorities = "USER")
     @SneakyThrows
     void testEditNonExistingBook(Long id) {
 
@@ -247,9 +250,9 @@ class BookControllerIntegrationTest {
                 "Sample Title2".equals(map.get("name")) && map.size() == 2));
     }
 
-    @WithMockUser(username = "test")
     @ParameterizedTest(name = "when book with id = {0} doesn't exist")
     @MethodSource("sourceInvalidBookId")
+    @WithMockUser(username = "testuser", authorities = "USER")
     @SneakyThrows
     void testDeleteExistingBook(Long id){
 
@@ -260,21 +263,22 @@ class BookControllerIntegrationTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/books"));
 
-        verify(bookService, times(1)).delete(id);
+        verify(bookService).delete(id);
     }
 
-    @WithMockUser(username = "test")
     @ParameterizedTest(name = "when book with id = {0} doesn't exist")
     @MethodSource("sourceInvalidBookId")
+    @WithMockUser(username = "testuser", authorities = "USER")
     @SneakyThrows
     void testDeleteNonExistingBook(Long id){
 
         doThrow(new EntityNotFoundException()).when(bookService).delete(id);
+        when(bookService.isUserCreator(id)).thenReturn(true);
 
         mvc.perform(delete("/books/" + id + "/delete")
                         .with(csrf()))
                 .andExpect(status().isNotFound());
 
-        verify(bookService, times(1)).delete(id);
+        verify(bookService).delete(id);
     }
 }

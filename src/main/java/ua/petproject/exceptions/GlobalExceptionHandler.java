@@ -4,41 +4,44 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+
 
 @Slf4j
-@RestControllerAdvice
+@ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({EntityNotFoundException.class,
-            IllegalArgumentException.class,
-            MethodArgumentNotValidException.class})
-    @ResponseStatus
-    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(Exception ex) {
-        String message;
-        HttpStatus status = switch (ex.getClass().getSimpleName()) {
-            case "EntityNotFoundException" -> {
-                message = "Entity not found";
-                yield HttpStatus.NOT_FOUND;
-            }
-            case "IllegalArgumentException" -> {
-                message = "Illegal argument";
-                yield HttpStatus.BAD_REQUEST;
-            }
-            case "MethodArgumentNotValidException" -> {
-                message = "Method argument not valid";
-                yield HttpStatus.BAD_REQUEST;
-            }
-            default -> {
-                message = "Internal server error";
-                yield HttpStatus.INTERNAL_SERVER_ERROR;
-            }
-        };
-        log.error("Entity not found: {}", ex.getMessage(), ex);
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex) {
+        String message = "Entity not found";
+        log.error(message + ": {}", ex.getMessage(), ex);
         ErrorResponse errorResponse = new ErrorResponse(message);
-        return new ResponseEntity<>(errorResponse, status);
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+        String message = "Illegal argument";
+        log.error(message + ": {}", ex.getMessage(), ex);
+        ErrorResponse errorResponse = new ErrorResponse(message);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
+        String message = "User already exists";
+        log.error(message + ": {}", ex.getMessage(), ex);
+        ErrorResponse errorResponse = new ErrorResponse(message);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        String message = "Access forbidden";
+        log.error(message + ": {}", ex.getMessage(), ex);
+        ErrorResponse errorResponse = new ErrorResponse(message);
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 }

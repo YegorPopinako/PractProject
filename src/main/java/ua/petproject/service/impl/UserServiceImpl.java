@@ -4,10 +4,13 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ua.petproject.exceptions.UserAlreadyExistsException;
 import ua.petproject.models.UserEntity;
 import ua.petproject.models.enums.Roles;
 import ua.petproject.repository.UserRepository;
 import ua.petproject.service.UserService;
+
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -23,10 +26,10 @@ public class UserServiceImpl implements UserService {
     public void saveUser(UserEntity userEntity) {
         UserEntity existingUser = userRepository.findByUsername(userEntity.getUsername());
         if (existingUser != null) {
-            throw new RuntimeException("User already exists!");
+            throw new UserAlreadyExistsException("User already exists!");
         }
         userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
-        userEntity.setRole(Roles.USER);
+        userEntity.setRoles(Set.of(Roles.USER));
         userRepository.save(userEntity);
     }
 

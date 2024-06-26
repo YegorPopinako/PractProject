@@ -1,5 +1,6 @@
 package ua.petproject.models;
 
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -14,6 +15,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ua.petproject.models.enums.Roles;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -39,10 +42,12 @@ public class UserEntity {
     @NotNull
     private String password;
 
+    @ElementCollection
     @Enumerated(EnumType.STRING)
-    private Roles role;
+    private Set<Roles> roles;
 
     public boolean hasRole(String roleName) {
-        return role != null && role.name().equals(roleName);
+        return roles != null && roles.stream()
+                .anyMatch(role -> role.name().equals(roleName));
     }
 }

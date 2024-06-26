@@ -7,26 +7,33 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ua.petproject.models.UserEntity;
 import ua.petproject.repository.UserRepository;
 
-import java.util.Collections;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity user = userRepository.findFirstByUsername(username);
+        UserEntity user = userRepository.findUserByUsernameWithRoles(username);
+
         if (user != null) {
-            return User.builder()
-                    .username(user.getEmail())
-                    .password(user.getPassword())
-                    .authorities(Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name())))
-                    .build();
+            Collection<SimpleGrantedAuthority> authorities = user.getRoles().stream()
+                    .map(role -> new SimpleGrantedAuthority(role.name()))
+                    .collect(Collectors.toList());
+
+            return new User(
+                    user.getUsername(),
+                    user.getPassword(),
+                    authorities
+            );
         } else {
             throw new UsernameNotFoundException("Invalid username or password.");
         }

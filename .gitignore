@@ -5,6 +5,7 @@ HELP.md
 
 target/
 build/
+PractProject
 
 *.iml
 *.ipr

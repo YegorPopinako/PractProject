@@ -7,7 +7,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -19,7 +18,6 @@ import ua.petproject.models.UserEntity;
 import ua.petproject.models.enums.BookCategory;
 import ua.petproject.service.BookService;
 import ua.petproject.service.UserService;
-import ua.petproject.service.impl.BookServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,13 +30,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(BookController.class)
 @Import(SecurityConfig.class)
-class BookControllerIntegrationTest {
+    class BookControllerIntegrationTest {
 
     @Autowired
     private MockMvc mvc;
 
-    @MockBean
-    @Qualifier("bookServiceImpl")
+    @MockBean(name = "bookServiceImpl")
     private BookService bookService;
 
     @MockBean
@@ -75,30 +72,7 @@ class BookControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "testuser", authorities = "USER")
-    void testEditBook() throws Exception {
-        Book book = new Book("Sample Title",
-                BookCategory.FANTASY,
-                "Sample Author",
-                "Sample Author",
-                "sample-url.jpg");
-
-        when(bookService.isUserCreator(1L)).thenReturn(true);
-        when(bookService.partialUpdate(anyLong(), argThat(map ->
-                "Sample Title2".equals(map.get("name")) && map.size() == 2))).thenReturn(book);
-
-        mvc.perform(patch("/books/1/edit")
-                        .with(csrf())
-                        .param("name", "Sample Title2"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/books"));
-
-        verify(bookService).partialUpdate(eq(1L), argThat(map ->
-                "Sample Title2".equals(map.get("name")) && map.size() == 2));
-    }
-
-    @Test
-    @WithMockUser(username = "testuser", authorities = "USER")
+    @WithMockUser(authorities = "USER")
     @SneakyThrows
     void testAddBook() {
         Book book = new Book();
@@ -125,7 +99,7 @@ class BookControllerIntegrationTest {
 
     @ParameterizedTest(name = "{0} {1} {2} {3} {4}")
     @MethodSource("sourceAddInvalidBook")
-    @WithMockUser(username = "testuser", authorities = "USER")
+    @WithMockUser(authorities = "USER")
     @SneakyThrows
     void testAddInvalidBook(String name, String authorName, String bookCategory, String publishingHouseName, String photoUrl) {
 
@@ -232,31 +206,56 @@ class BookControllerIntegrationTest {
         );
     }
 
-    @ParameterizedTest(name = "when book with id = {0} doesn't exist")
-    @MethodSource("sourceInvalidBookId")
-    @WithMockUser(username = "testuser", authorities = "USER")
-    @SneakyThrows
-    void testEditNonExistingBook(Long id) {
+    @Test
+    @WithMockUser(authorities = "USER")
+    void testEditBook() throws Exception {
+        Book book = new Book("Sample Title",
+                BookCategory.FANTASY,
+                "Sample Author",
+                "Sample Author",
+                "sample-url.jpg");
 
-        when(bookService.partialUpdate(anyLong(), argThat(map -> "Sample Title2".equals(map.get("name")) && map.size() == 2)))
-                .thenThrow(new EntityNotFoundException());
+        when(bookService.isUserCreator(1L)).thenReturn(true);
+        when(bookService.partialUpdate(anyLong(), argThat(map ->
+                "Sample Title2".equals(map.get("name")) && map.size() == 2))).thenReturn(book);
 
-        mvc.perform(patch("/books/" + id + "/edit")
-                        .param("name", "Sample Title2")
-                        .with(csrf()))
-                .andExpect(status().isNotFound());
+        mvc.perform(patch("/books/1/edit")
+                        .with(csrf())
+                        .param("name", "Sample Title2"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/books"));
 
-        verify(bookService, times(1)).partialUpdate(eq(id), argThat(map ->
+        verify(bookService).partialUpdate(eq(1L), argThat(map ->
                 "Sample Title2".equals(map.get("name")) && map.size() == 2));
     }
 
     @ParameterizedTest(name = "when book with id = {0} doesn't exist")
     @MethodSource("sourceInvalidBookId")
-    @WithMockUser(username = "testuser", authorities = "USER")
+    @WithMockUser(authorities = "USER")
+    @SneakyThrows
+    void testEditNonExistingBook(Long id) {
+
+        when(bookService.isUserCreator(id)).thenReturn(true);
+        when(bookService.partialUpdate(anyLong(), argThat(map -> "Sample Title2".equals(map.get("name")) && map.size() == 2)))
+                .thenThrow(new EntityNotFoundException());
+
+        mvc.perform(patch("/books/" + id + "/edit")
+                        .with(csrf())
+                        .param("name", "Sample Title2"))
+                .andExpect(status().isNotFound());
+
+        verify(bookService).partialUpdate(eq(id), argThat(map ->
+                "Sample Title2".equals(map.get("name")) && map.size() == 2));
+    }
+
+    @ParameterizedTest(name = "when book with id = {0} doesn't exist")
+    @MethodSource("sourceInvalidBookId")
+    @WithMockUser(authorities = "USER")
     @SneakyThrows
     void testDeleteExistingBook(Long id){
 
         doNothing().when(bookService).delete(id);
+        when(bookService.isUserCreator(id)).thenReturn(true);
 
         mvc.perform(delete("/books/" + id + "/delete")
                         .with(csrf()))
@@ -268,7 +267,7 @@ class BookControllerIntegrationTest {
 
     @ParameterizedTest(name = "when book with id = {0} doesn't exist")
     @MethodSource("sourceInvalidBookId")
-    @WithMockUser(username = "testuser", authorities = "USER")
+    @WithMockUser(authorities = "USER")
     @SneakyThrows
     void testDeleteNonExistingBook(Long id){
 
